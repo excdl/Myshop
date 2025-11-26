@@ -4,183 +4,138 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>專業購物商城</title>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
-body { font-family: Arial; background:#f7f7f7; margin:0; padding:20px; }
-header { font-size: 24px; font-weight:bold; margin-bottom:15px; }
-#categoryTabs { display:flex; gap:10px; margin-bottom:15px; flex-wrap: wrap; }
-.tab { padding:8px 15px; background:#ddd; border-radius:8px; cursor:pointer; }
-.tab.active { background:#3498db; color:white; }
-#products { display:flex; flex-wrap:wrap; gap:15px; }
-.product { background:white; border-radius:12px; padding:10px; width:calc(33% - 10px); box-shadow:0 2px 10px rgba(0,0,0,0.1); display:flex; flex-direction:column; align-items:center; }
-.product img { width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px; }
-.product button { padding:6px 12px; background:#2ecc71; color:white; border:none; border-radius:6px; cursor:pointer; }
-#cart { margin-top:25px; background:white; padding:15px; border-radius:12px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
-#cart table { width:100%; border-collapse:collapse; margin-bottom:10px; }
-#cart table th, #cart table td { border:1px solid #ccc; padding:6px; text-align:center; }
-#cart input[type=number]{ width:50px; }
-.deleteBtn{ padding:2px 5px; background:#e74c3c; color:white; border:none; border-radius:4px; cursor:pointer; }
-#checkoutBtn { padding:10px 20px; background:#e67e22; color:white; border:none; border-radius:8px; cursor:pointer; }
-#totalAmount { font-weight:bold; margin-top:10px; }
-@media(max-width:768px){ .product { width:calc(50% - 10px); } }
-@media(max-width:480px){ .product { width:100%; } }
+  body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f5f5f5; }
+  header { background:#4CAF50; color:#fff; padding:15px; text-align:center; font-size:24px; }
+  nav { display:flex; justify-content:center; margin:10px 0; }
+  nav button { margin:0 5px; padding:10px 20px; border:none; background:#ddd; cursor:pointer; }
+  nav button.active { background:#4CAF50; color:#fff; }
+  .container { display:flex; flex-wrap:wrap; justify-content:center; }
+  .card { background:#fff; width:200px; margin:10px; border-radius:5px; overflow:hidden; box-shadow:0 0 5px rgba(0,0,0,0.2); }
+  .card img { width:100%; height:150px; object-fit:cover; }
+  .card-body { padding:10px; }
+  .card-body h4 { margin:0 0 5px; font-size:16px; }
+  .card-body p { margin:5px 0; font-size:14px; color:#333; }
+  .card-body input { width:50px; }
+  .card-body button { margin-top:5px; padding:5px 10px; border:none; background:#4CAF50; color:#fff; cursor:pointer; }
 </style>
 </head>
 <body>
 
-<header id="welcomeMsg">載入中...</header>
-
-<div id="categoryTabs"></div>
-<div id="products"></div>
-
-<div id="cart">
-<h3>購物車</h3>
-<table id="cartTable">
-<thead>
-<tr><th>商品名稱</th><th>單價</th><th>數量</th><th>小計</th><th>操作</th></tr>
-</thead>
-<tbody></tbody>
-</table>
-<div id="totalAmount">總金額: NT$0</div>
-<button id="checkoutBtn">結帳送出</button>
-</div>
+<header id="welcome">專業購物商城</header>
+<nav id="categoryTabs"></nav>
+<div class="container" id="productContainer"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxcb7WpjD5LqaXGxnoIJLwrh8LuOR4_Qkk37tb35UVraH3sLgBSpGuXBmfP0dyo5uKU/exec"; // 統一 GET/POST 後端
-let userId="", userName="", products=[], currentCategory="", cart=[];
+// ===== 設定區 =====
+const API_URL = "你的 Google Apps Script API URL"; // GET 商品 / POST 訂單
+let products = [];
+let categories = [];
+let userName = "訪客"; // 可改為 LIFF / LINE Login 取得名稱
 
-// ===== LIFF 初始化取得用戶資料 =====
-async function initLIFF(){
-    await liff.init({ liffId: "2008573741-WGE2G7lZ" });
-    if(!liff.isLoggedIn()) await liff.login();
-    const profile = await liff.getProfile();
-    userId = profile.userId;
-    userName = profile.displayName;
-    document.getElementById("welcomeMsg").textContent = `${userName} 您好`;
-}
-
-// ===== 取得產品清單 =====
-async function loadProducts(){
-    const res = await fetch(API_URL, { method:'GET' });
+// ===== 取得商品清單 =====
+async function fetchProducts(){
+  try {
+    const res = await fetch(API_URL);
     products = await res.json();
 
-    const categories = [...new Set(products.map(p=>p['類別']))];
-    const tabsDiv = document.getElementById("categoryTabs");
-    tabsDiv.innerHTML="";
-    categories.forEach(cat=>{
-        const div=document.createElement("div");
-        div.className="tab";
-        div.textContent=cat;
-        div.onclick=()=>{ currentCategory=cat; renderProducts(); document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active")); div.classList.add("active"); };
-        tabsDiv.appendChild(div);
-    });
-    currentCategory=categories[0];
-    tabsDiv.firstChild.classList.add("active");
-    renderProducts();
+    // 取得所有類別
+    categories = [...new Set(products.map(p => p.類別))];
+    renderCategories();
+    renderProducts(categories[0]);
+  } catch(e){
+    console.error(e);
+    alert("無法取得商品清單");
+  }
 }
 
-// ===== 顯示商品 =====
-function renderProducts(){
-    const container=document.getElementById("products");
-    container.innerHTML="";
-    products.filter(p=>p['類別']===currentCategory).forEach(p=>{
-        const div=document.createElement("div");
-        div.className="product";
-        div.innerHTML=`
-            <img src="${p['商品照片']}" alt="${p['商品名稱']}">
-            <div><strong>${p['商品名稱']}</strong></div>
-            <div>${p['特色說明'] || ''}</div>
-            <div>售價: ${p['售價']}</div>
-            <button>加入購物車</button>
-        `;
-        div.querySelector("button").onclick=()=>{ addToCart(p); };
-        container.appendChild(div);
-    });
-}
-
-// ===== 購物車操作 =====
-function addToCart(product){
-    const existing = cart.find(c=>c['商品名稱']===product['商品名稱']);
-    if(existing){ existing.quantity+=1; } else { cart.push({...product, quantity:1}); }
-    renderCart();
-}
-
-function renderCart(){
-    const tbody=document.querySelector("#cartTable tbody");
-    tbody.innerHTML="";
-    let total = 0;
-    cart.forEach((item,index)=>{
-        const tr=document.createElement("tr");
-        const price = parseInt(item['售價'].replace(/[^0-9]/g,""));
-        const subtotal = price * item.quantity;
-        total += subtotal;
-        tr.innerHTML=`
-            <td>${item['商品名稱']}</td>
-            <td>${item['售價']}</td>
-            <td><input type="number" min="1" value="${item.quantity}" data-index="${index}"></td>
-            <td>NT$${subtotal}</td>
-            <td><button class="deleteBtn" data-index="${index}">刪除</button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-    document.getElementById("totalAmount").textContent = `總金額: NT$${total}`;
-
-    // 修改數量
-    document.querySelectorAll("#cartTable input[type=number]").forEach(input=>{
-        input.onchange=()=> {
-            const idx = input.getAttribute("data-index");
-            let val = parseInt(input.value);
-            if(val<1) val=1;
-            cart[idx].quantity = val;
-            renderCart();
-        };
-    });
-
-    // 刪除商品
-    document.querySelectorAll(".deleteBtn").forEach(btn=>{
-        btn.onclick=()=>{
-            const idx = btn.getAttribute("data-index");
-            cart.splice(idx,1);
-            renderCart();
-        };
-    });
-}
-
-// ===== 結帳送單 =====
-document.getElementById("checkoutBtn").onclick=async()=>{
-    if(cart.length===0){ Swal.fire("購物車為空"); return; }
-    const orderTime=new Date().toISOString();
-    for(const item of cart){
-        const body={
-            userId, userName, orderTime,
-            productCategory:item['類別'],
-            productId:item['商品ID'] || "",
-            productName:item['商品名稱'],
-            quantity:item.quantity,
-            price:item['售價'],
-            subtotal:parseInt(item['售價'].replace(/[^0-9]/g,""))*item.quantity
-        };
-        await fetch(API_URL,{
-            method:"POST",
-            body:JSON.stringify(body),
-            headers:{"Content-Type":"application/json"}
-        });
+// ===== 渲染類別按鈕 =====
+function renderCategories(){
+  const nav = document.getElementById("categoryTabs");
+  nav.innerHTML = "";
+  categories.forEach(cat=>{
+    const btn = document.createElement("button");
+    btn.textContent = cat;
+    btn.onclick = ()=> {
+      document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      renderProducts(cat);
     }
-    Swal.fire("訂單送出成功");
-    cart=[];
-    renderCart();
+    if(nav.children.length===0) btn.classList.add("active");
+    nav.appendChild(btn);
+  });
+}
+
+// ===== 渲染商品卡片 =====
+function renderProducts(category){
+  const container = document.getElementById("productContainer");
+  container.innerHTML = "";
+  const filtered = products.filter(p=>p.類別===category);
+  filtered.forEach(p=>{
+    const card = document.createElement("div");
+    card.className = "card";
+    const img = document.createElement("img");
+    img.src = p.商品照片; // Google Drive 直接網址或可轉為可公開 URL
+    const body = document.createElement("div");
+    body.className = "card-body";
+    body.innerHTML = `
+      <h4>${p.商品名稱}</h4>
+      <p>${p.特色說明 || ""}</p>
+      <p>價格: ${p.售價}</p>
+      <label>數量: <input type="number" min="1" value="1" id="qty_${p.商品名稱}"></label>
+      <button onclick="orderProduct('${p.商品名稱}')">加入購物車</button>
+    `;
+    card.appendChild(img);
+    card.appendChild(body);
+    container.appendChild(card);
+  });
+}
+
+// ===== 送出訂單 =====
+async function orderProduct(productName){
+  const product = products.find(p=>p.商品名稱===productName);
+  const qty = parseInt(document.getElementById("qty_"+productName).value);
+  if(qty<1){ alert("數量至少 1"); return; }
+
+  const data = {
+    userId: "LINE_USER_ID", // 可透過 LIFF 取得
+    userName: userName,
+    orderTime: new Date(),
+    productCategory: product.類別,
+    productId: product.商品照片, // 或自己設定 ID
+    productName: product.商品名稱,
+    quantity: qty,
+    price: parseFloat(product.售價.replace("NT$","")) || 0,
+    subtotal: (parseFloat(product.售價.replace("NT$",""))*qty).toFixed(2),
+    receiverName: "",
+    receiverPhone: "",
+    receiverAddress: "",
+    paymentMethod: "",
+    remark: ""
+  };
+
+  try{
+    const res = await fetch(API_URL, {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if(result.message==="成功") alert("訂單已送出");
+    else alert("訂單送出失敗");
+  }catch(e){
+    console.error(e);
+    alert("送單失敗");
+  }
 }
 
 // ===== 初始化 =====
-window.onload=async()=>{
-    await initLIFF();
-    await loadProducts();
-};
+document.getElementById("welcome").textContent = userName + " 您好，歡迎光臨";
+fetchProducts();
 </script>
-
 </body>
 </html>
+
 
 
 
