@@ -6,7 +6,7 @@
 <title>團購生鮮商城</title>
 <style>
 :root{
-  --main-color:#66ccff; /* 馬卡龍藍 */
+  --main-color:#66ccff; /* 主色藍 */
   --main-color-dark:#4db8e6; /* 深10% */
 }
 
@@ -72,7 +72,7 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
   height:36px;
   padding:0 10px;
   border-radius:8px;
-  background:#ff77aa; /* 預設粉紅 */
+  background:#ff77aa; /* 預設粉色 */
   color:white;
   display:flex;
   align-items:center;
@@ -83,7 +83,7 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
   transition: background 0.3s;
 }
 .add-cart.active {
-  background:#99e6b3; /* 淺綠色 */
+  background:#99e6b3; /* 點擊後綠色 */
   color:white;
 }
 
@@ -164,8 +164,9 @@ header p{font-size:0.85em;}
   </div>
 </div>
 
+<script src="https://static.line-scdn.net/liff/edge/2.24/liff.js"></script>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwJpqst1oxfzx4a66UR0YpIF5Vg_O97GBQevV-EUa9rvMei6T-VJ4Wcy9PlfAtleJ4H/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx-cwxG5MiZjjolF0gV0nTea6XTr-bsALX8j3l2cJbOI-m2saeafEK8HI2VZ2lIFhUF/exec";
 let products=[], categories=[], cart=[], userId="", userName="", pickupStores=[];
 
 // LIFF 初始化
@@ -324,7 +325,7 @@ document.getElementById("deliveryMethod").onchange = function(){
   }
 }
 
-// 結帳
+// === 結帳 + LIFF 發送訊息 ===
 document.getElementById("checkoutBtn").onclick = async function(){
   if(cart.length===0){ alert("請先加入商品"); return; }
 
@@ -349,18 +350,33 @@ document.getElementById("checkoutBtn").onclick = async function(){
 
     if(!res.ok) throw new Error("HTTP錯誤 "+res.status);
     const result = await res.json();
+
     if(result.orderId){
       alert("下單成功！訂單編號："+result.orderId);
-      document.getElementById("qrcodeContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${result.orderId}" />`;
-      cart=[]; updateCartBar(); renderCart();
-    } else {
-      alert("下單失敗");
-    }
 
-  } catch(err){
-    console.error(err);
-    alert("結帳失敗："+err.message);
-  }
+      const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${result.orderId}`;
+      document.getElementById("qrcodeContainer").innerHTML = `<img src="${qrCodeUrl}" />`;
+
+      cart=[];
+      updateCartBar();
+      renderCart();
+
+      // LIFF 發送訊息
+      if(liff.isLoggedIn()){
+        const messageText = `
+您好 ${userName}，您的訂單已完成 ✅
+訂單編號: ${result.orderId}
+總金額: ${orderData.totalAmount} 元
+付款方式: ${orderData.paymentMethod}
+取貨方式: ${orderData.deliveryMethod === '自取' ? '門市：'+orderData.pickupStore : '地址：'+orderData.receiverAddress}
+        `;
+        await liff.sendMessages([{type:'text',text:messageText}]);
+        await liff.sendMessages([{type:'image',originalContentUrl:qrCodeUrl,previewImageUrl:qrCodeUrl}]);
+      }
+
+    } else alert("下單失敗");
+
+  } catch(err){ console.error(err); alert("結帳失敗："+err.message); }
 }
 
 // 初始化
@@ -369,11 +385,6 @@ fetchProducts();
 </script>
 </body>
 </html>
-
-
-
-
-
 
 
 
