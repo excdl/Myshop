@@ -6,14 +6,14 @@
 <title>團購生鮮商城</title>
 <style>
 body{font-family:"Microsoft JhengHei",Arial,sans-serif;margin:0;padding:0;background:#f5f5f5;}
-header{background:#B0E57C;color:white;padding:1.2em;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+header{background:#A8E6CF;color:white;padding:1.2em;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
 header h1{margin:0;font-size:1.6em;}
 header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .container{width:95%;max-width:1200px;margin:1.5em auto;}
 .categories{display:flex;gap:0.4em;flex-wrap:wrap;margin-bottom:1em;justify-content:center;}
 .category-btn{padding:0.5em 1em;background:#eee;border:none;cursor:pointer;border-radius:20px;transition:0.3s;font-weight:500;font-size:0.9em;}
-.category-btn:hover{background:#B0E57C;color:white;}
-.category-btn.active{background:#B0E57C;color:white;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+.category-btn:hover{background:#A8E6CF;color:white;}
+.category-btn.active{background:#A8E6CF;color:white;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
 .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8em;}
 .product-card{background:white;border-radius:8px;padding:0.8em;box-shadow:0 2px 10px rgba(0,0,0,0.1);display:flex;flex-direction:column;transition:0.3s;position:relative;overflow:hidden;font-size:0.9em;}
 .product-card:hover{transform:translateY(-2px);box-shadow:0 3px 12px rgba(0,0,0,0.2);}
@@ -21,7 +21,7 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .product-card:hover img{transform:scale(1.03);}
 .product-card h3{margin:0.4em 0 0.2em 0;font-size:1em;}
 .product-card p{margin:0.2em 0;font-size:0.85em;color:#555;}
-.product-card .price{font-weight:bold;color:#4caf50;margin-top:0.4em;}
+.product-card .price{font-weight:bold;color:#4CAF50;margin-top:0.4em;}
 
 /* 數量控制 */
 .quantity-control{
@@ -35,7 +35,7 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
   width:36px;
   height:36px;
   border:none;
-  background:#B0E57C;
+  background:#FFA500;
   color:white;
   border-radius:6px;
   cursor:pointer;
@@ -61,7 +61,7 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
   height:36px;
   padding:0 10px;
   border-radius:8px;
-  background:#eee;
+  background:#FFA500;
   color:white;
   display:flex;
   align-items:center;
@@ -71,13 +71,13 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
   cursor:pointer;
   transition: background 0.3s, transform 0.15s, box-shadow 0.3s;
 }
-.add-cart.active { background:#B0E57C !important; color:white; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
+.add-cart.active { background:#339933 !important; color:white; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
 .add-cart.bounce { transform: scale(1.2); }
 
 /* 購物車圖示 */
-.cart{position:fixed;right:15px;bottom:75px;background:#B0E57C;color:white;padding:0.9em 1em;border-radius:50%;cursor:pointer;font-weight:bold;font-size:1.4em;box-shadow:0 2px 10px rgba(0,0,0,0.3);transition:0.3s;z-index:999;}
+.cart{position:fixed;right:15px;bottom:75px;background:#A8E6CF;color:white;padding:0.9em 1em;border-radius:50%;cursor:pointer;font-weight:bold;font-size:1.4em;box-shadow:0 2px 10px rgba(0,0,0,0.3);transition:0.3s;z-index:999;}
 .cart:hover{transform:scale(1.1);}
-#cartBar{position:fixed;left:0;bottom:0;width:100%;background:#B0E57C;color:white;display:flex;justify-content:space-between;align-items:center;padding:0.8em 1em;box-shadow:0 -2px 5px rgba(0,0,0,0.2);font-weight:bold;font-size:0.95em;cursor:pointer;z-index:998;display:none;border-top-left-radius:12px;border-top-right-radius:12px;}
+#cartBar{position:fixed;left:0;bottom:0;width:100%;background:#A8E6CF;color:white;display:flex;justify-content:space-between;align-items:center;padding:0.8em 1em;box-shadow:0 -2px 5px rgba(0,0,0,0.2);font-weight:bold;font-size:0.95em;cursor:pointer;z-index:998;display:none;border-top-left-radius:12px;border-top-right-radius:12px;}
 #cartBar span{display:flex;align-items:center;gap:0.5em;}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:flex-start;padding-top:5%;z-index:9999;}
 .modal-content{background:white;padding:1.5em;border-radius:12px;max-height:90%;overflow-y:auto;width:95%;position:relative;font-size:0.9em;}
@@ -85,15 +85,9 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 #cartItems div{padding:0.3em 0;border-bottom:1px solid #eee;}
 #cartItems div:last-child{border:none;}
 select,input{width:100%;padding:0.5em;margin:0.2em 0;border-radius:6px;border:1px solid #ccc;font-size:0.9em;}
-button#checkoutBtn{width:100%;padding:0.6em;margin-top:0.6em;border:none;border-radius:8px;background:#B0E57C;color:white;font-weight:bold;cursor:pointer;font-size:1em;}
-button#checkoutBtn:hover{background:#9ED36A;}
-
-/* QR Code Modal */
-#qrModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);justify-content:center;align-items:center;z-index:10000;}
-#qrContent{background:white;padding:1.5em;border-radius:12px;text-align:center;position:relative;}
-#qrContent canvas{width:180px;height:180px;margin:1em 0;}
-#qrClose{position:absolute;top:8px;right:12px;cursor:pointer;color:red;font-weight:bold;font-size:1.2em;}
-
+button#checkoutBtn{width:100%;padding:0.6em;margin-top:0.6em;border:none;border-radius:8px;background:#339933;color:white;font-weight:bold;cursor:pointer;font-size:1em;}
+button#checkoutBtn:hover{background:#2E7D32;}
+#qrcodeContainer{text-align:center;margin-top:1em;}
 @media (max-width:600px){
 .products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
 .product-card img{height:120px;}
@@ -120,7 +114,6 @@ header p{font-size:0.85em;}
   <span>查看購物車</span>
 </div>
 
-<!-- 購物車 Modal -->
 <div class="modal" id="cartModal">
   <div class="modal-content">
     <span class="modal-close" id="cartClose">&times;</span>
@@ -154,34 +147,27 @@ header p{font-size:0.85em;}
     </div>
 
     <button id="checkoutBtn">✅ 結帳</button>
-  </div>
-</div>
-
-<!-- QR Code Modal -->
-<div id="qrModal">
-  <div id="qrContent">
-    <span id="qrClose">&times;</span>
-    <h3>取貨 QR Code</h3>
-    <canvas id="qrCanvas"></canvas>
+    <div id="qrcodeContainer"></div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzA9QeORO9BfVqzky2tiJbVnixk-XtafKBDBzsjY5TE_YhE03CZWpox3hO7fSF6QDfq/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzA9QeORO9BfVqzky2tiJbVnixk-XtafKBDBzsjY5TE_YhE03CZWpox3hO7fSF6QDfq/exec"; // 改成你的 Google Apps Script URL
 let products=[], categories=[], cart=[], userId="", userName="", pickupStores=[];
 
-// LIFF 初始化
+// 初始化 LIFF
 async function initLIFF(){
-  await liff.init({ liffId:"2008573741-WGE2G7lZ" });
-  if(!liff.isLoggedIn()) liff.login();
-  const profile = await liff.getProfile();
-  userId = profile.userId;
-  userName = profile.displayName;
-  document.getElementById("greeting").textContent = `${userName} 您好`;
+  await liff.init({ liffId:"YOUR_LIFF_ID" });
+  if(liff.isLoggedIn()){
+    const profile = await liff.getProfile();
+    userId = profile.userId;
+    userName = profile.displayName;
+    document.getElementById("greeting").textContent = `${userName} 您好`;
+  } else liff.login();
 }
 
-// 取得商品清單 & 取貨門市
+// 取得商品與門市
 async function fetchProducts(){
   const res = await fetch(API_URL+"?action=products");
   products = await res.json();
@@ -192,11 +178,9 @@ async function fetchProducts(){
   const storeRes = await fetch(API_URL+"?action=stores");
   pickupStores = await storeRes.json();
   const storeSelect = document.getElementById("pickupStore");
-  pickupStores.forEach(s=>{ 
+  pickupStores.forEach(s=>{
     const opt=document.createElement("option"); 
-    opt.value=s; 
-    opt.textContent=s; 
-    storeSelect.appendChild(opt); 
+    opt.value=s; opt.textContent=s; storeSelect.appendChild(opt);
   });
 }
 
@@ -223,6 +207,7 @@ function renderProducts(category){
   products.filter(p=>p['類別']===category).forEach(p=>{
     const card=document.createElement("div");
     card.className="product-card";
+
     card.innerHTML=`
       <img src="${p['商品照片']||''}" alt="${p['商品名稱']}">
       <h3>${p['商品名稱']}</h3>
@@ -242,8 +227,7 @@ function renderProducts(category){
 
 function changeQty(name, delta){
   const span = document.getElementById(`qty-${name}`);
-  let qty = parseInt(span.textContent);
-  qty += delta;
+  let qty = parseInt(span.textContent)+delta;
   if(qty<1) qty=1;
   span.textContent = qty;
   span.classList.add("pop");
@@ -260,7 +244,6 @@ function addToCartWithAnimation(name, btn){
   btn.classList.add("active");
   btn.classList.add("bounce");
   setTimeout(()=>{ btn.classList.remove("bounce"); },150);
-
   updateCartBar();
 }
 
@@ -298,21 +281,14 @@ function renderCart(){
 
 document.getElementById("deliveryMethod").onchange = function(){
   const val = this.value;
-  if(val === "自取"){ 
-    document.getElementById("selfPickup").style.display = "block"; 
-    document.getElementById("deliveryForm").style.display = "none"; 
-  } else { 
-    document.getElementById("selfPickup").style.display = "none"; 
-    document.getElementById("deliveryForm").style.display = "block"; 
-  }
+  document.getElementById("selfPickup").style.display = val==="自取"?"block":"none";
+  document.getElementById("deliveryForm").style.display = val==="外送"?"block":"none";
 }
 
-// 結帳生成 QR Code
 document.getElementById("checkoutBtn").onclick = async function(){
   if(cart.length===0){ alert("購物車為空"); return; }
   const orderData = {
-    userId,
-    userName,
+    userId, userName,
     deliveryMethod: document.getElementById("deliveryMethod").value,
     pickupStore: document.getElementById("pickupStore").value,
     receiverName: document.getElementById("receiverName").value,
@@ -322,23 +298,21 @@ document.getElementById("checkoutBtn").onclick = async function(){
     totalAmount: cart.reduce((sum,i)=>sum+i.quantity*i.price,0),
     items: cart
   };
-  const res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(orderData)});
-  const data = await res.json();
-  alert("下單成功，訂單編號："+data.orderId);
+  try{
+    const res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(orderData)});
+    const data = await res.json();
+    alert("下單成功，訂單編號："+data.orderId);
 
-  // 生成 QR Code
-  const qrCanvas = document.getElementById("qrCanvas");
-  QRCode.toCanvas(qrCanvas, window.location.href+"?orderId="+data.orderId, {width:180});
-  document.getElementById("qrModal").style.display = "flex";
+    // 生成 QR Code
+    document.getElementById("qrcodeContainer").innerHTML="";
+    QRCode.toCanvas(document.getElementById("qrcodeContainer"), JSON.stringify({orderId:data.orderId, items:cart, total:orderData.totalAmount}), {width:180});
 
-  cart=[];
-  updateCartBar();
-  renderCart();
-}
-
-// QR Code 關閉
-document.getElementById("qrClose").onclick = function(){
-  document.getElementById("qrModal").style.display = "none";
+    cart=[];
+    updateCartBar();
+    renderCart();
+  } catch(e){
+    alert("下單失敗："+e.message);
+  }
 }
 
 initLIFF();
@@ -346,7 +320,6 @@ fetchProducts();
 </script>
 </body>
 </html>
-
 
 
 
