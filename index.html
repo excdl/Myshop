@@ -192,15 +192,15 @@ cartBar.onclick=()=>{ renderCart(); cartModal.style.display="flex"; }
 cartClose.onclick=()=>{ cartModal.style.display="none"; }
 
 // ======= renderCart() =======
+// ======= renderCart() =======
 function renderCart(){
   const container = document.getElementById("cartItems");
   container.innerHTML = "";
   
   if(cart.length === 0){
-    // 購物車空的提示
     container.innerHTML = "<p style='text-align:center;color:#555;'>購物車是空的</p>";
     document.getElementById("cartTotal").textContent = "0";
-    updateCartBar();  // 隱藏底部購物車條
+    updateCartBar(); // 隱藏底部購物車條
     return;
   }
 
@@ -212,27 +212,27 @@ function renderCart(){
     div.textContent = `${item.name} ${item.quantity} x ${item.price} = ${subtotal} 元`;
     container.appendChild(div);
   });
-  
+
   document.getElementById("cartTotal").textContent = total;
-  updateCartBar();  // 更新底部購物車條
+  updateCartBar(); // 更新底部購物車條
 }
 
 // ======= 結帳按鈕事件 =======
-document.getElementById("checkoutBtn").onclick = async function() {
-  if(cart.length === 0) {
+document.getElementById("checkoutBtn").onclick = async function(){
+  if(cart.length === 0){
     alert("購物車是空的");
     return;
   }
 
   const totalAmount = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
   const deliveryMethod = document.getElementById("deliveryMethod").value;
-  let receiverName = "", receiverPhone = "", receiverAddress = "", pickupStore = "";
+  let receiverName="", receiverPhone="", receiverAddress="", pickupStore="";
 
-  if(deliveryMethod === "外送") {
+  if(deliveryMethod === "外送"){
     receiverName = document.getElementById("receiverName").value;
     receiverPhone = document.getElementById("receiverPhone").value;
     receiverAddress = document.getElementById("receiverAddress").value;
-    if(!receiverName || !receiverPhone || !receiverAddress) {
+    if(!receiverName || !receiverPhone || !receiverAddress){
       alert("請完整填寫收件資訊");
       return;
     }
@@ -241,37 +241,58 @@ document.getElementById("checkoutBtn").onclick = async function() {
   }
 
   const paymentMethod = document.getElementById("paymentMethod").value;
-  const data = { 
-    userId, userName, totalAmount, paymentMethod, deliveryMethod, 
-    receiverName, receiverPhone, receiverAddress, pickupStore, items: cart 
+  const data = {
+    userId, userName, totalAmount, paymentMethod, deliveryMethod,
+    receiverName, receiverPhone, receiverAddress, pickupStore, items: cart
   };
 
   try {
-    const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(data) });
-    const result = await res.json();
-    alert("訂單完成，單號：" + result.orderId);
+    console.log("送出資料：", data);
 
-    const qrURL = `https://你的網站/order.html?orderId=${result.orderId}`;
-    new QRCode(document.getElementById("qrcodeContainer"), { text: qrURL, width: 180, height: 180 });
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
 
-    if(liff){
-      liff.shareTargetPicker([{ 
-        type: 'text', 
-        text: `訂單號：${result.orderId}\n總額：${totalAmount} 元\n取貨：${pickupStore || '-'}\n掃描 QR Code 查看明細：${qrURL}` 
-      }]).then(()=>{ alert('已分享至 LINE 聊天室'); }).catch(err=>console.error(err));
+    if(!res.ok){
+      throw new Error(`HTTP 錯誤，狀態碼：${res.status}`);
     }
 
-    // ✅ 清空購物車並同步更新畫面
+    let result;
+    try{
+      result = await res.json(); // 安全解析 JSON
+    } catch(e){
+      throw new Error("伺服器回傳非 JSON 格式");
+    }
+
+    // ✅ 成功先 alert
+    alert("訂單完成，單號：" + result.orderId);
+
+    // 產生 QR Code
+    const qrURL = `https://你的網站/order.html?orderId=${result.orderId}`;
+    document.getElementById("qrcodeContainer").innerHTML = "";
+    new QRCode(document.getElementById("qrcodeContainer"), { text: qrURL, width:180, height:180 });
+
+    // LIFF 分享
+    if(liff){
+      liff.shareTargetPicker([{
+        type: 'text',
+        text: `訂單號：${result.orderId}\n總額：${totalAmount} 元\n取貨：${pickupStore || '-'}\n掃描 QR Code 查看明細：${qrURL}`
+      }]).then(()=>{ console.log('已分享至 LINE 聊天室'); })
+        .catch(err=>console.error(err));
+    }
+
+    // 清空購物車並更新畫面
     cart.length = 0;
-    renderCart();      // 更新購物車列表
-    updateCartBar();   // 更新底部購物車條
-  } catch (err) {
-    console.error(err);
+    renderCart();
+    updateCartBar();
+
+  } catch(err){
+    console.error("送出訂單錯誤：", err);
     alert("訂單送出失敗，請稍後再試");
   }
 };
-
-
 
 initLIFF();
 fetchProducts();
