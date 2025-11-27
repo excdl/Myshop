@@ -250,53 +250,66 @@ document.getElementById("deliveryMethod").onchange=function(){
 }
 
 // 結帳
-document.getElementById("checkoutBtn").onclick = async function(){
-  if(cart.length===0){ alert("購物車是空的"); return; }
+document.getElementById("checkoutBtn").onclick = async function() {
+  if(cart.length === 0){ alert("購物車是空的"); return; }
 
   const totalAmount = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
-  const deliveryMethod=document.getElementById("deliveryMethod").value;
+  const deliveryMethod = document.getElementById("deliveryMethod").value;
   let receiverName="", receiverPhone="", receiverAddress="", pickupStore="";
+
   if(deliveryMethod==="外送"){
-    receiverName=document.getElementById("receiverName").value;
-    receiverPhone=document.getElementById("receiverPhone").value;
-    receiverAddress=document.getElementById("receiverAddress").value;
-    if(!receiverName||!receiverPhone||!receiverAddress){ alert("請完整填寫收件資訊"); return; }
-  } else pickupStore=document.getElementById("pickupStore").value;
+    receiverName = document.getElementById("receiverName").value;
+    receiverPhone = document.getElementById("receiverPhone").value;
+    receiverAddress = document.getElementById("receiverAddress").value;
+    if(!receiverName||!receiverPhone||!receiverAddress){
+      alert("請完整填寫收件資訊");
+      return;
+    }
+  } else {
+    pickupStore = document.getElementById("pickupStore").value;
+  }
 
-  const paymentMethod=document.getElementById("paymentMethod").value;
-  const data={ userId, userName, totalAmount, paymentMethod, deliveryMethod, receiverName, receiverPhone, receiverAddress, pickupStore, items:cart };
+  const paymentMethod = document.getElementById("paymentMethod").value;
+  const data = { userId, userName, totalAmount, paymentMethod, deliveryMethod, receiverName, receiverPhone, receiverAddress, pickupStore, items:cart };
 
-  try{
-    const res = await fetch(API_URL,{
+  try {
+    const res = await fetch(API_URL, {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data)
     });
-    if(!res.ok) throw new Error("送單失敗");
+    if(!res.ok) throw new Error("POST 失敗");
     const result = await res.json();
 
     alert("訂單完成，單號："+result.orderId);
 
     const qrURL = `https://你的網站/order.html?orderId=${result.orderId}`;
-    new QRCode(document.getElementById("qrcodeContainer"), { text: qrURL, width:180, height:180 });
+    const qrContainer = document.getElementById("qrcodeContainer");
+    qrContainer.innerHTML="";
+    new QRCode(qrContainer, { text: qrURL, width:180, height:180 });
+    qrContainer.scrollIntoView({ behavior: "smooth", block: "center" });
 
+    // 清空購物車
+    cart.length = 0;
+    renderCart();
+    updateCartBar();
+
+    // LINE 分享單獨處理，不影響訂單成功
     if(liff){
       liff.shareTargetPicker([{
         type:'text',
         text:`訂單號：${result.orderId}\n總額：${totalAmount} 元\n取貨：${pickupStore||'-'}\n掃描 QR Code 查看明細：${qrURL}`
-      }]).then(()=>console.log('已分享至 LINE'))
-        .catch(err=>console.warn('分享失敗，但訂單已完成', err));
+      }])
+      .then(()=>console.log('已分享至 LINE'))
+      .catch(err=>console.warn('LINE 分享失敗', err));
     }
 
-    cart.length = 0; // 安全清空
-    renderCart();
-    updateCartBar();
-
-  }catch(err){
+  } catch(err){
     console.error(err);
     alert("訂單送出失敗，請稍後再試");
   }
-}
+};
+
 
 initLIFF();
 fetchProducts();
