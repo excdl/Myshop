@@ -110,12 +110,12 @@ header p{font-size:0.85em;}
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwSsmmgooWCdxpGhZNgUtwunahFFQ4Qdxi6wq0nFZUpJ7wOIrC_IX6_wAUa48APFuil/exec";
 let products=[], categories=[], cart=[], userId="", userName="";
 let pickupStores = [];
 
 async function initLIFF(){
-  await liff.init({ liffId:"YOUR_LIFF_ID" });
+  await liff.init({ liffId:"2008573741-WGE2G7lZ" });
   if(liff.isLoggedIn()){
     const profile = await liff.getProfile();
     userId = profile.userId;
