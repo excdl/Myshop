@@ -108,7 +108,7 @@ header p{font-size:0.85em;}
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxGnuAWKkpdVNA97AL4ir3zX7iWlf8c_NxM1tCdsGPNu_29DwkCevh18-4iulLzlkhl/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzWs7o9p7btCYTaBHC8jOaXHW0X6_DQretByKniiM7XoZHG9GhpJ9IEayi7DhcwdkIa/exec";
 let products=[], categories=[], cart=[], userId="", userName="";
 let pickupStores = [];
 
@@ -127,7 +127,7 @@ async function initLIFF(){
 async function fetchProducts(){
   const res = await fetch(API_URL+"?action=products");
   products = await res.json();
-  categories = [...new Set(products.map(p=>p['類別']))];
+  categories = [...new Set(products.map(p=>p['分類']))];
   renderCategories();
   renderProducts(categories[0]);
 
@@ -164,13 +164,14 @@ function renderCategories(){
 function renderProducts(category){
   const container = document.getElementById("productContainer");
   container.innerHTML="";
-  products.filter(p=>p['類別']===category).forEach(p=>{
+
+  products.filter(p => p['類別'] === category).forEach(p => {
     const card=document.createElement("div");
     card.className="product-card";
     card.innerHTML=`
-      <img src="${p['商品照片']||''}" alt="${p['商品名稱']}">
+      <img src="${p['商品照片']}" alt="${p['商品名稱']}">
       <h3>${p['商品名稱']}</h3>
-      <p>${p['特色說明']||''}</p>
+      <p>${p['特色說明'] || ''}</p>
       <p>單位：${p['單位']}</p>
       <p class="price">${p['售價']} 元</p>
       <p class="quantity-control">
@@ -183,6 +184,7 @@ function renderProducts(category){
     container.appendChild(card);
   });
 }
+
 
 // 數量調整
 function changeQty(name, delta){
@@ -207,7 +209,7 @@ function addToCartWithAnimation(name, btn){
     cart.splice(existIndex, 1);
     btn.classList.remove("active");
   } else { 
-    cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['類別']});
+    cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['分類']});
     btn.classList.add("active");
   }
 
