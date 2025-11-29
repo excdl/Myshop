@@ -127,7 +127,7 @@ async function initLIFF(){
 async function fetchProducts(){
   const res = await fetch(API_URL+"?action=products");
   products = await res.json();
-  categories = [...new Set(products.map(p=>p['分類']))];
+ categories = [...new Set(products.map(p => p['類別']))].filter(Boolean);
   renderCategories();
   renderProducts(categories[0]);
 
@@ -165,7 +165,7 @@ function renderProducts(category){
   const container = document.getElementById("productContainer");
   container.innerHTML="";
 
-  products.filter(p => p['分類'] === category).forEach(p => {
+  products.filter(p => p['類別'] === category).forEach(p => {
     const card=document.createElement("div");
     card.className="product-card";
     card.innerHTML=`
@@ -209,7 +209,7 @@ function addToCartWithAnimation(name, btn){
     cart.splice(existIndex, 1);
     btn.classList.remove("active");
   } else { 
-    cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['分類']});
+    cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['類別']});
     btn.classList.add("active");
   }
 
