@@ -310,12 +310,14 @@ document.getElementById("deliveryMethod").onchange = function(){
   } else if(val === "外送"){ 
     document.getElementById("selfPickup").style.display = "none"; 
     document.getElementById("deliveryForm").style.display = "block"; 
+    fetchUserData(); 
   } else {
     document.getElementById("selfPickup").style.display = "none";
     document.getElementById("deliveryForm").style.display = "none";
   }
 }
-// 結帳
+
+// ===== 結帳 =====
 document.getElementById("checkoutBtn").onclick = async function(){
   if(cart.length===0){ alert("購物車是空的"); return; }
 
@@ -331,26 +333,6 @@ document.getElementById("checkoutBtn").onclick = async function(){
     receiverPhone=document.getElementById("receiverPhone").value;
     receiverAddress=document.getElementById("receiverAddress").value;
     if(!receiverName||!receiverPhone||!receiverAddress){ alert("請完整填寫收件資訊"); return; }
-
-    // 🔹 自動更新會員資料
-    const res = await fetch(API_URL, {
-      method:'POST',
-      body: JSON.stringify({
-        userId,
-        userName,
-        name: receiverName,
-        phone: receiverPhone,
-        address: receiverAddress
-      })
-    });
-    const result = await res.json();
-
-    // ✅ 將更新後資料帶入前台表單
-    if(result.user){
-      document.getElementById("receiverName").value = result.user.name;
-      document.getElementById("receiverPhone").value = result.user.phone;
-      document.getElementById("receiverAddress").value = result.user.address;
-    }
   } else {
     pickupStore=document.getElementById("pickupStore").value;
     if(!pickupStore){ alert("請選擇取貨門市"); return; }
@@ -363,20 +345,23 @@ document.getElementById("checkoutBtn").onclick = async function(){
     deliveryMethod,receiverName,receiverPhone,receiverAddress,pickupStore,items:cart
   };
 
-  // 下單到 GAS
   const resOrder=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)});
   const resultOrder=await resOrder.json();
   alert("訂單完成，單號："+resultOrder.orderId);
 
-    cart=[]; updateCartBar(); cartModal.style.display="none";
+  cart=[]; updateCartBar(); cartModal.style.display="none";
+
+  // ✅ 結帳後重置商品數量回 1
+  products.forEach(p=>{
+    const idName = encodeURIComponent(p['商品名稱']);
+    const span = document.getElementById(`qty-${idName}`);
+    if(span) span.textContent = "1";
+  });
 }
 
-
-// 初始化
-initLIFF();
-fetchProducts();
+// ===== 初始化 =====
+initLIFF().then(fetchProducts);
 </script>
-
 </body>
 </html>
 
