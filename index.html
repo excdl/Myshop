@@ -295,16 +295,18 @@ function addToCartWithAnimation(idName, btn){
   updateCartBar();
 }
 
-// 更新購物車條
+// ===== 更新購物車條 =====
 function updateCartBar(){
   const cartBar = document.getElementById("cartBar");
-  if(cart.length===0){ cartBar.style.display="none"; return; }
+  if(cart.length===0){ 
+    cartBar.style.display="none"; 
+    return; 
+  }
   const totalQty = cart.reduce((sum,i)=>sum+i.quantity,0);
   const totalAmt = cart.reduce((sum,i)=>sum+i.quantity*i.price,0);
   document.getElementById("cartInfo").textContent=`🛒 ${totalQty} 件 | ${totalAmt} 元`;
   cartBar.style.display="flex";
 }
-
 
 // ===== 打開購物車 =====
 const cartModal = document.getElementById("cartModal");
@@ -324,6 +326,18 @@ function renderCart(){
   });
   document.getElementById("cartTotal").textContent=total;
   updateCartBar();
+}
+
+// ===== 外送自動帶入舊資料 =====
+async function fetchUserData() {
+  if(!userId) return;
+  const res = await fetch(API_URL+"?action=getUser&userId="+userId);
+  const result = await res.json();
+  if(result.user){
+    document.getElementById("receiverName").value = result.user.name || "";
+    document.getElementById("receiverPhone").value = result.user.phone || "";
+    document.getElementById("receiverAddress").value = result.user.address || "";
+  }
 }
 
 // ===== 取貨方式切換 =====
@@ -389,7 +403,6 @@ initLIFF().then(fetchProducts);
 </script>
 </body>
 </html>
-
 
 
 
