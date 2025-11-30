@@ -351,22 +351,6 @@ document.getElementById("checkoutBtn").onclick = async function(){
 }
 
 
-  // 產生 QRCode
-  document.getElementById("qrcodeContainer").innerHTML="";
-  const orderDetailUrl = `${window.location.origin}?page=pickup&orderId=${result.orderId}`;
-  new QRCode(document.getElementById("qrcodeContainer"), {text: orderDetailUrl,width:128,height:128});
-  const link = document.createElement("a");
-  link.href = orderDetailUrl;
-  link.textContent = "點擊查看訂單明細";
-  link.target = "_blank";
-  link.style.display = "block";
-  link.style.textAlign = "center";
-  link.style.marginTop = "0.5em";
-  document.getElementById("qrcodeContainer").appendChild(link);
-
-  cart=[]; updateCartBar(); cartModal.style.display="none";
-}
-
 // 初始化
 initLIFF();
 fetchProducts();
