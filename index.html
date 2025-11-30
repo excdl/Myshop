@@ -48,8 +48,46 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 }
 
 
-#cartBar{position:fixed;left:0;bottom:0;width:100%;background:#7ed6df;color:white;display:flex;justify-content:space-between;align-items:center;padding:0.8em 1em;box-shadow:0 -2px 5px rgba(0,0,0,0.2);font-weight:bold;font-size:0.95em;cursor:pointer;z-index:998;display:none;border-top-left-radius:12px;border-top-right-radius:12px;}
-#cartBar span{display:flex;align-items:center;gap:0.5em;}
+#cartBar {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background:#4CAF50; /* 主色調 */
+    color:white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8em 1em;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+    font-weight: bold;
+    font-size: 0.95em;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    display: none;
+}
+
+#cartBar span#cartInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+#cartBar button#viewCartBtn {
+    background:#b23838; /* 磚紅色 */
+    border:none;
+    padding:0.5em 1em;
+    border-radius:6px;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+
+#cartBar button#viewCartBtn:hover {
+    background:#ff4d4d;
+}
+
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:flex-start;padding-top:5%;z-index:9999;}
 .modal-content{background:white;padding:1.5em;border-radius:12px;max-height:90%;overflow-y:auto;width:95%;position:relative;font-size:0.9em;}
 .modal-close{position:absolute;top:10px;right:12px;cursor:pointer;color:red;font-weight:bold;font-size:1.2em;}
@@ -82,8 +120,9 @@ header p{font-size:0.85em;}
 
 <div id="cartBar">
   <span id="cartInfo">🛒 0 件 | 0 元</span>
-  <span>查看購物車</span>
+  <button id="viewCartBtn">查看購物車 / 結帳</button>
 </div>
+
 
 <div class="modal" id="cartModal">
   <div class="modal-content">
@@ -230,17 +269,28 @@ function addToCart(name, btn){
 // 更新購物車條
 function updateCartBar(){
   const cartBar = document.getElementById("cartBar");
-  if(cart.length===0){ cartBar.style.display="none"; return; }
+  if(cart.length===0){ 
+    cartBar.style.display="none"; 
+    return; 
+  }
   const totalQty = cart.reduce((sum,i)=>sum+i.quantity,0);
   const totalAmt = cart.reduce((sum,i)=>sum+i.quantity*i.price,0);
   document.getElementById("cartInfo").textContent=`🛒 ${totalQty} 件 | ${totalAmt} 元`;
   cartBar.style.display="flex";
 }
 
-// 打開購物車
-document.getElementById("cartBar").onclick=()=>{ renderCart(); cartModal.style.display="flex"; }
-document.getElementById("cartClose").onclick=()=>{ cartModal.style.display="none"; }
+// 打開購物車彈窗
+document.getElementById("viewCartBtn").onclick = () => { 
+  renderCart(); 
+  cartModal.style.display="flex"; 
+}
 
+// 關閉購物車彈窗
+document.getElementById("cartClose").onclick = () => { 
+  cartModal.style.display="none"; 
+}
+
+// 渲染購物車內容
 function renderCart(){
   const container=document.getElementById("cartItems");
   container.innerHTML="";
@@ -254,6 +304,7 @@ function renderCart(){
   });
   document.getElementById("cartTotal").textContent=total;
 }
+
 
 // 取貨方式切換
 document.getElementById("deliveryMethod").onchange = async function(){
