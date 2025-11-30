@@ -25,9 +25,28 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .quantity-control{margin:0.4em 0;display:flex;align-items:center;justify-content:center;gap:5px;}
 .quantity-control button{width:28px;height:28px;border:none;background:#7ed6df;color:white;border-radius:4px;cursor:pointer;}
 .quantity-control span{min-width:18px;text-align:center;display:inline-block;}
-.add-cart{width:36px;height:36px;border-radius:6px;background:#ff6b6b;color:white;display:flex;align-items:center;justify-content:center;font-size:1.2em;border:none;cursor:pointer;transition:0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
-.add-cart.active{background:#7ed6df;color:white;box-shadow:0 2px 8px rgba(0,0,0,0.5);}
-.add-cart:active{transform:scale(0.85);}
+.add-cart {
+    width:36px;
+    height:36px;
+    border-radius:6px;
+    background:#ff6b6b;   /* 預設磚紅色 */
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2em;
+    border:none;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+
+.add-cart.active {
+    background:#7ed6df;  /* 點擊變綠色 */
+    color:white;
+    box-shadow:0 2px 8px rgba(0,0,0,0.5);
+}
+
 #cartBar{position:fixed;left:0;bottom:0;width:100%;background:#7ed6df;color:white;display:flex;justify-content:space-between;align-items:center;padding:0.8em 1em;box-shadow:0 -2px 5px rgba(0,0,0,0.2);font-weight:bold;font-size:0.95em;cursor:pointer;z-index:998;display:none;border-top-left-radius:12px;border-top-right-radius:12px;}
 #cartBar span{display:flex;align-items:center;gap:0.5em;}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:flex-start;padding-top:5%;z-index:9999;}
@@ -192,19 +211,20 @@ function changeQty(name, delta){
 
 // 加入/移除購物車
 function addToCart(name, btn){
-  const qty = parseInt(document.getElementById(`qty-${name}`).textContent);
-  const product = products.find(p=>p['商品名稱']===name);
-  const idx = cart.findIndex(c=>c.name===name);
+    const qty = parseInt(document.getElementById(`qty-${name}`).textContent);
+    const product = products.find(p=>p['商品名稱']===name);
+    const idx = cart.findIndex(c=>c.name===name);
 
-  if(idx !== -1){
-    cart.splice(idx,1);
-    btn.classList.remove("active");
-  } else {
-    cart.push({name, price: parseInt(product['售價']), quantity: qty});
-    btn.classList.add("active");
-  }
-  updateCartBar();
+    if(idx !== -1){
+        cart.splice(idx,1);
+        btn.classList.remove("active");  // 移除綠色，恢復磚紅
+    } else {
+        cart.push({name, price: parseInt(product['售價']), quantity: qty});
+        btn.classList.add("active");     // 加入綠色
+    }
+    updateCartBar();
 }
+
 
 // 更新購物車條
 function updateCartBar(){
