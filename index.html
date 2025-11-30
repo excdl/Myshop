@@ -97,6 +97,22 @@ button#checkoutBtn:hover{background:#63c5b5;}
 header h1{font-size:1.4em;}
 header p{font-size:0.85em;}
 }
+@keyframes flyToCart {
+  0% {transform: translate(0,0) scale(1); opacity:1;}
+  50% {transform: translate(150px,-300px) scale(0.5); opacity:0.7;}
+  100% {transform: translate(300px,-500px) scale(0); opacity:0;}
+}
+
+.fly-img {
+  position:fixed;
+  width:50px;
+  height:50px;
+  border-radius:8px;
+  z-index:9999;
+  pointer-events:none;
+  animation: flyToCart 0.8s forwards;
+}
+
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
