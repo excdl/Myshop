@@ -153,10 +153,16 @@ header p{font-size:0.85em;}
 
     <button id="checkoutBtn">✅ 結帳</button>
   </div>
+
+    <div id="orderDetailPage" style="display:none;padding:20px;">
+  <h2>訂單明細</h2>
+  <div id="orderDetailContent"></div>
+  <button onclick="closeOrderDetail()">返回</button>
 </div>
 
+</div>
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbydMEV-7i6VMjAMI1HQ3qP8XoA4hXD7dX8Qf6QhBaGxc6bUxZEcECGTlcaqnQCAN4-x/exec";
+const API_URL = https://script.google.com/macros/s/AKfycbyKz2Fxs093hCBxxgHnCec1diVQ0FalHA-CdVXmYk8ip848xRzwNo-UIe4Y-Zha4WxV/exec";
 let products=[], categories=[], cart=[], userId="", userName="";
 let pickupStores = [];
 
@@ -424,6 +430,46 @@ document.getElementById("checkoutBtn").onclick = async function(){
       })
     });
   } catch(e){ console.error("通知 LINE Bot 失敗", e); }
+}
+async function openOrderDetail(orderId){
+  const res = await fetch(API_URL+"?action=orderDetail&orderId="+orderId);
+  const order = await res.json();
+
+  if(order.error){
+    alert("查無訂單");
+    return;
+  }
+
+  let html = `
+    <p><b>訂單編號：</b>${order.orderId}</p>
+    <p><b>日期：</b>${order.date} ${order.time}</p>
+    <p><b>取貨方式：</b>${order.deliveryMethod}</p>
+  `;
+
+  if(order.deliveryMethod==="外送"){
+    html += `
+      <p><b>收件人：</b>${order.receiverName}</p>
+      <p><b>電話：</b>${order.receiverPhone}</p>
+      <p><b>地址：</b>${order.receiverAddress}</p>
+    `;
+  } else {
+    html += `<p><b>門市：</b>${order.pickupStore}</p>`;
+  }
+
+  html += `<hr><h3>商品明細</h3>`;
+
+  order.items.forEach(i=>{
+    html += `<p>${i.name} - ${i.quantity} x ${i.price} = ${i.subtotal} 元</p>`;
+  });
+
+  html += `<hr><p><b>總金額：</b>${order.totalAmount} 元</p>`;
+
+  document.getElementById("orderDetailContent").innerHTML = html;
+  document.getElementById("orderDetailPage").style.display="block";
+}
+
+function closeOrderDetail(){
+  document.getElementById("orderDetailPage").style.display="none";
 }
 
 // ===== 初始化 =====
