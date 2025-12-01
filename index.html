@@ -14,7 +14,7 @@ body{
 
 /* ======== Header ======== */
 header{
-    background:#7ed6df; /* 改成跟類別按鈕選中顏色一致 */
+    background:#7ed6df; /* 與分類按鈕同色 */
     color:white;padding:1.2em;
     text-align:center;
     box-shadow:0 2px 5px rgba(0,0,0,0.2);
@@ -46,7 +46,7 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     background:white;
     border-radius:8px;
     padding:0.8em;
-    border:2px solid #ccc;
+    border:2px solid #ccc; /* 淺灰色線條 */
     box-shadow:0 2px 8px rgba(0,0,0,0.08);
     transition:0.3s;
 }
@@ -73,27 +73,24 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     background:#B22222;color:white;cursor:pointer;
 }
 
-/* ======== 購物條 ======== */
+/* ======== 購物條（Uber Eats 風格） ======== */
 #cartBar{
     position:fixed;
     bottom:0;left:0;
     width:100%;
     display:none;
     padding:0.8em 1em;
-
     background:#ffffffee;
     backdrop-filter:blur(6px);
-
     box-shadow:0 -4px 20px rgba(0,0,0,0.25);
     border-top-left-radius:20px;
     border-top-right-radius:20px;
-
     display:flex;
     justify-content:space-between;
     align-items:center;
-
     animation:slideUp 0.35s ease;
 }
+
 @keyframes slideUp{
   from{ transform:translateY(100%); opacity:0;}
   to{ transform:translateY(0); opacity:1;}
@@ -101,8 +98,8 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
 
 /* 左半：訂單小計 */
 #cartLeft{
-    width:50%;
-    text-align:center;
+    width:45%;
+    text-align:left;
     font-size:1.1em;
 }
 #cartLeft .label{color:#222;font-weight:bold;}
@@ -111,17 +108,15 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
 /* 右半：結帳按鈕 */
 #cartRight{
     width:50%;
-    display:flex;justify-content:flex-start;
+    display:flex;justify-content:flex-end;
 }
 #viewCartBtn{
-    padding:0.6em 2em;
+    padding:0.5em 2em;
     border:none;cursor:pointer;
     font-size:1.05em;font-weight:bold;
     color:white;
-
     background:linear-gradient(90deg,#ff7676,#ff3c3c);
     border-radius:40px;
-
     box-shadow:0 4px 10px rgba(255,60,60,0.35);
     transition:0.25s;
 }
@@ -146,37 +141,39 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     float:right;font-size:1.4em;color:red;cursor:pointer;
 }
 
-/* ======== 結帳表單欄位並排 ======== */
+/* ======== 結帳欄位佈局 ======== */
 #deliveryForm input{
-    padding:0.7em;
-    margin:0.2em 0;
-    border-radius:6px;
-    border:1px solid #ccc;
-    font-size:1em;
+    width:48%;
+    margin-bottom:0.6em;
+    padding:0.4em 0.5em;
+    border-radius:6px;border:1px solid #ccc;font-size:0.9em;
 }
-#deliveryForm .row{
-    display:flex;
-    gap:10px;
-}
-#deliveryForm .row input{
-    flex:1;
-}
-#deliveryForm .full-width{
-    flex:1 1 100%;
+#receiverAddress{
+    width:100%;
 }
 
-/* ======== 放大付款 / 送貨選框 50% ======== */
+/* ======== 下拉選單尺寸調整 ======== */
 select{
-    transform:scale(1.5);
+    transform:scale(1.25); /* 放大 25% */
     transform-origin:left center;
-    padding:0.4em;
+    padding:0.35em 0.5em;
+    margin-bottom:0.6em;
+}
+
+/* ======== 響應式 ======== */
+@media (max-width:600px){
+    .products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
+    .product-card img{height:120px;}
+    .category-btn{padding:0.5em 0.8em;font-size:0.85em;}
+    header h1{font-size:1.4em;}
+    header p{font-size:0.85em;}
+    #deliveryForm input{width:100%;}
 }
 </style>
-
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
-
 <body>
+
 <header>
     <h1>生鮮蔬果購物商城</h1>
     <p id="greeting">您好, 會員</p>
@@ -187,7 +184,7 @@ select{
     <div id="productContainer" class="products"></div>
 </div>
 
-<!-- ======== 購物條 ======== -->
+<!-- ======== Uber Eats 購物條 ======== -->
 <div id="cartBar">
     <div id="cartLeft">
         <span class="label">訂單小計：</span>
@@ -229,24 +226,14 @@ select{
 
     <div id="deliveryForm" style="display:none;">
         <p>收件人資料</p>
-        <div class="row">
-            <input id="receiverName" placeholder="姓名" />
-            <input id="receiverPhone" placeholder="電話" />
-        </div>
-        <div class="row full-width">
-            <input id="receiverAddress" placeholder="地址" />
-        </div>
+        <input id="receiverName" placeholder="姓名" />
+        <input id="receiverPhone" placeholder="電話" />
+        <input id="receiverAddress" placeholder="地址" />
     </div>
 
-    <button id="checkoutBtn" 
-        style="width:100%;padding:0.7em;border:none;
-        background:#7ed6df;color:white;font-weight:bold;
-        border-radius:10px;margin-top:1em;">
-        確認結帳
-    </button>
+    <button id="checkoutBtn">確認結帳</button>
   </div>
 </div>
-
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz_VaPxbndfTGn7AD7172q0WnqvqRW4c_corHHSQl4PS8L2xAQbt9vjr7hnGnhijkY/exec";
