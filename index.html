@@ -162,7 +162,7 @@ header p{font-size:0.85em;}
 
 </div>
 <script>
-const API_URL ="https://script.google.com/macros/s/AKfycbyRUegpsa1BYptx4tUW8VTYJ84inZba8yrWxviBvB7gaaBRzBhkrq1NIajxKN03ylNM/exec";
+const API_URL ="https://script.google.com/macros/s/AKfycbyzPKh1qi8A_Ikn7JSQcAsxS6B5fiTok9cGgkZOjXwIa5-AwUcBZ7znusd-HwxjEBQ/exec";
 let products=[], categories=[], cart=[], userId="", userName="";
 let pickupStores = [];
 
@@ -401,77 +401,42 @@ document.getElementById("checkoutBtn").onclick = async function(){
 
   const paymentMethod=document.getElementById("paymentMethod").value;
 
-  const data={ userId,userName,totalAmount,shippingFee,paymentMethod,
-    deliveryMethod,receiverName,receiverPhone,receiverAddress,pickupStore,items:cart
+  const data={ 
+    userId,userName,totalAmount,shippingFee,paymentMethod,
+    deliveryMethod,receiverName,receiverPhone,receiverAddress,pickupStore,
+    items:cart
   };
 
-  // 下單
+  // ===== 下單 =====
   const resOrder=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)});
   const resultOrder=await resOrder.json();
+
   alert("訂單完成，單號："+resultOrder.orderId);
 
+  // ===== 清空購物車 =====
   cart=[]; updateCartBar(); cartModal.style.display="none";
 
-  // 重置商品數量回 1
   products.forEach(p=>{
-    const idName = encodeURIComponent(p['商品名稱']);
-    const span = document.getElementById(`qty-${idName}`);
-    if(span) span.textContent = "1";
+    const idName=encodeURIComponent(p['商品名稱']);
+    const span=document.getElementById(`qty-${idName}`);
+    if(span) span.textContent="1";
   });
 
-  // ✅ 結帳完成後通知 LINE Bot 回覆訂單
+  // ===========================================
+  // ⭐ 使用 LIFF → 傳訊息給 LINE Bot（免費）
+  // ===========================================
   try {
-    await fetch(API_URL, {
-      method: "POST",
-      body: JSON.stringify({
-        action: "notifyBot",
-        userId: userId,
-        orderId: resultOrder.orderId
-      })
-    });
-  } catch(e){ console.error("通知 LINE Bot 失敗", e); }
-}
-async function openOrderDetail(orderId){
-  const res = await fetch(API_URL+"?action=orderDetail&orderId="+orderId);
-  const order = await res.json();
-
-  if(order.error){
-    alert("查無訂單");
-    return;
+    await liff.sendMessages([{
+      type:"text",
+      text:`checkout ${resultOrder.orderId}`
+    }]);
+  } catch(e){
+    console.error("liff.sendMessages 失敗", e);
+    alert("訂單已成立，但傳送到 LINE 失敗，請手動查看訂單。");
   }
+};
 
-  let html = `
-    <p><b>訂單編號：</b>${order.orderId}</p>
-    <p><b>日期：</b>${order.date} ${order.time}</p>
-    <p><b>取貨方式：</b>${order.deliveryMethod}</p>
-  `;
-
-  if(order.deliveryMethod==="外送"){
-    html += `
-      <p><b>收件人：</b>${order.receiverName}</p>
-      <p><b>電話：</b>${order.receiverPhone}</p>
-      <p><b>地址：</b>${order.receiverAddress}</p>
-    `;
-  } else {
-    html += `<p><b>門市：</b>${order.pickupStore}</p>`;
-  }
-
-  html += `<hr><h3>商品明細</h3>`;
-
-  order.items.forEach(i=>{
-    html += `<p>${i.name} - ${i.quantity} x ${i.price} = ${i.subtotal} 元</p>`;
-  });
-
-  html += `<hr><p><b>總金額：</b>${order.totalAmount} 元</p>`;
-
-  document.getElementById("orderDetailContent").innerHTML = html;
-  document.getElementById("orderDetailPage").style.display="block";
-}
-
-function closeOrderDetail(){
-  document.getElementById("orderDetailPage").style.display="none";
-}
-
+    
 // ===== 初始化 =====
 initLIFF().then(fetchProducts);
 </script>
