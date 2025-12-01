@@ -394,7 +394,7 @@ document.getElementById("deliveryMethod").onchange = function(){
 }
 
 // ===== 結帳 =====
-document.getElementById("checkoutBtn").onclick = async function(){
+document.getElementById("checkoutBtn").onclick = async function() {
   if(cart.length===0){ alert("購物車是空的"); return; }
 
   const totalAmount = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
@@ -423,31 +423,59 @@ document.getElementById("checkoutBtn").onclick = async function(){
   };
 
   // ===== 下單 =====
-  const resOrder=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)});
-  const resultOrder=await resOrder.json();
+  const resOrder = await fetch(API_URL, {
+    method:'POST',
+    body:JSON.stringify(data)
+  });
+  const resultOrder = await resOrder.json();
 
   alert("訂單完成，單號："+resultOrder.orderId);
 
   // ===== 清空購物車 =====
   cart=[]; updateCartBar(); cartModal.style.display="none";
-
   products.forEach(p=>{
-    const idName=encodeURIComponent(p['商品名稱']);
-    const span=document.getElementById(`qty-${idName}`);
+    const idName = encodeURIComponent(p['商品名稱']);
+    const span = document.getElementById(`qty-${idName}`);
     if(span) span.textContent="1";
   });
 
-  // ⭐ LIFF 傳訊息給 LINE Bot
+  // ===== LIFF 傳 Flex 訊息（前端直接抓資料） =====
   try {
-    await liff.sendMessages([{
-      type:"text",
-      text:`checkout ${resultOrder.orderId}`
-    }]);
+    const resFlex = await fetch(`${API_URL}?action=orderDetail&orderId=${resultOrder.orderId}`);
+    const orderData = await resFlex.json();
+
+    // 檢查 orderData 是否有 items
+    if(!orderData || !orderData.items || orderData.items.length===0){
+      throw new Error("訂單明細空");
+    }
+
+    const flexMsg = {
+      type: "flex",
+      altText: `訂單 ${resultOrder.orderId}`,
+      contents: buildOrderFlex(orderData).contents
+    };
+
+    await liff.sendMessages([flexMsg]);
   } catch(e){
-    console.error("liff.sendMessages 失敗", e);
-    alert("訂單已成立，但傳送到 LINE 失敗，請手動查看訂單。");
+    console.error("LIFF 傳 Flex 失敗", e);
+
+    // fallback 傳文字訊息
+    try {
+      await liff.sendMessages([{
+        type:"text",
+        text:`checkout ${resultOrder.orderId}`
+      }]);
+    } catch(err){
+      console.error("文字 fallback 也失敗", err);
+    }
+
+    alert("訂單已成立，但 LIFF 傳訊息失敗，請手動查看訂單。");
+    if(e.message && e.message.includes("user doesn't grant required permissions")) {
+      alert("您尚未授權 LIFF 發送訊息給您，請先點擊授權按鈕。");
+    }
   }
 };
+
 
 // ===== 初始化 =====
 initLIFF().then(fetchProducts);
