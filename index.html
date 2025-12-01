@@ -168,11 +168,10 @@ header p{font-size:0.85em;}
 
 
 <script>
-const API_URL ="https://script.google.com/macros/s/AKfycbwELhOz4pTJddR4dFbdr3r4pvFK2PPpMyw0BJupYvWsF-OcIw4Ad0LS4hlP9wa3LC9q/exec";
-let products=[], categories=[], cart=[], userId="", userName="";
-let pickupStores = [];
+const API_URL ="https://script.google.com/macros/s/AKfycbxKX90zhCBU9cIyqeuysbZTgvCLHe7WmP4qlABw_6zIFYHqJi9fG1Rv4Jjfqd4raqNN/exec";
+let products=[], cart=[], userId="", userName="", pickupStores=[];
 
-// ===== LIFF 登入 =====
+// ===== LIFF 初始化 =====
 async function initLIFF(){
   await liff.init({ liffId:"2008573741-WGE2G7lZ" });
   if(liff.isLoggedIn()){
@@ -180,240 +179,44 @@ async function initLIFF(){
     userId = profile.userId;
     userName = profile.displayName;
     document.getElementById("greeting").textContent = `${userName} 您好`;
+    fetchUserData();
   } else liff.login();
 }
 
 // ===== 取得商品與門市 =====
 async function fetchProducts(){
-  try{
-    // 取得商品
-    const res = await fetch(`${API_URL}?action=products`);
-    products = await res.json();
-    categories = [...new Set(products.map(p => p['類別']))].filter(Boolean);
-    renderCategories();
+  const res = await fetch(API_URL+"?action=products");
+  products = await res.json();
+  renderProducts(products);
 
-    // 自動顯示第一個分類
-    if(categories[0]) renderProducts(categories[0]);
-
-    // 取得門市
-    const storeRes = await fetch(`${API_URL}?action=stores`);
-    pickupStores = await storeRes.json();
-    const storeSelect = document.getElementById("pickupStore");
-    pickupStores.forEach(s=>{
-      const opt = document.createElement("option");
-      opt.value = s;
-      opt.textContent = s;
-      storeSelect.appendChild(opt);
-    });
-  }catch(e){ console.error("抓取商品或門市失敗:", e); }
-}
-
-// ===== 顯示分類按鈕 =====
-function renderCategories(){
-  const container = document.getElementById("categoryContainer");
-  container.innerHTML="";
-  categories.forEach((cat,index)=>{
-    const btn=document.createElement("button");
-    btn.textContent=cat;
-    btn.className="category-btn";
-    btn.onclick=()=>{ 
-      document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active")); 
-      btn.classList.add("active"); 
-      renderProducts(cat);
-    }
-    container.appendChild(btn);
-
-    // 預設第一個分類為 active
-    if(index===0) btn.classList.add("active");
+  const storeRes = await fetch(API_URL+"?action=stores");
+  pickupStores = await storeRes.json();
+  const storeSelect = document.getElementById("pickupStore");
+  pickupStores.forEach(s=>{
+    const opt=document.createElement("option");
+    opt.value=s; opt.textContent=s;
+    storeSelect.appendChild(opt);
   });
-}
-
-// ===== 顯示商品 =====
-function renderProducts(category){
-  const container = document.getElementById("productContainer");
-  container.innerHTML="";
-  products
-    .filter(p => p['類別']?.trim() === category?.trim())
-    .forEach(p => {
-      const idName = encodeURIComponent(p['商品名稱']);
-      const card=document.createElement("div");
-      card.className="product-card";
-      card.innerHTML=`
-        <img src="${p['商品照片']}" alt="${p['商品名稱']}">
-        <h3>${p['商品名稱']}</h3>
-        <p>${p['特色說明'] || ''}</p>
-        <p>單位：${p['單位']}</p>
-        <p class="price">${p['售價']} 元</p>
-        <p class="quantity-control">
-          <button onclick="changeQty('${idName}',-1)">-</button>
-          <span id="qty-${idName}">1</span>
-          <button onclick="changeQty('${idName}',1)">+</button>
-          <button class="add-cart" style="background:#B22222;color:white;" 
-            onclick="addToCartWithAnimation('${idName}', this)">🛒
-          </button>
-        </p>
-      `;
-      container.appendChild(card);
-    });
-}
-
-// ===== 數量調整並動畫 =====
-function changeQty(idName, delta){
-  const span = document.getElementById(`qty-${idName}`);
-  let qty = parseInt(span.textContent);
-  qty += delta;
-  if(qty<1) qty=1;
-  span.textContent = qty;
-
-  span.style.transition = "transform 0.2s";
-  span.style.transform = "scale(1.3)";
-  setTimeout(() => { span.style.transform = "scale(1)"; }, 200);
-
-  const name = decodeURIComponent(idName);
-  const existIndex = cart.findIndex(c=>c.name===name);
-  if(existIndex !== -1){
-    cart[existIndex].quantity = qty;
-    updateCartBar();
-  }
-}
-
-// ===== 加入購物車動畫 + 加入/移除邏輯 =====
-function addToCartWithAnimation(idName, btn){
-  const name = decodeURIComponent(idName);
-  const qty = parseInt(document.getElementById(`qty-${idName}`).textContent);
-  const product = products.find(p=>p['商品名稱']===name);
-  const existIndex = cart.findIndex(c=>c.name===name);
-
-  // 飛入動畫
-  const img = btn.closest(".product-card").querySelector("img");
-  const cartIcon = document.getElementById("cartBar");
-  if(img && cartIcon){
-    const flyImg = img.cloneNode(true);
-    const imgRect = img.getBoundingClientRect();
-    const cartRect = cartIcon.getBoundingClientRect();
-    flyImg.style.position = 'fixed';
-    flyImg.style.top = imgRect.top + 'px';
-    flyImg.style.left = imgRect.left + 'px';
-    flyImg.style.width = imgRect.width + 'px';
-    flyImg.style.height = imgRect.height + 'px';
-    flyImg.style.borderRadius = '6px';
-    flyImg.style.zIndex = 9999;
-    flyImg.style.transition = 'transform 0.8s cubic-bezier(0.65,0,0.35,1), opacity 0.8s';
-    document.body.appendChild(flyImg);
-    const deltaX = cartRect.left + cartRect.width/2 - (imgRect.left + imgRect.width/2);
-    const deltaY = cartRect.top + cartRect.height/2 - (imgRect.top + imgRect.height/2);
-    requestAnimationFrame(()=>{
-      flyImg.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(0)`;
-      flyImg.style.opacity = 0;
-    });
-    flyImg.addEventListener('transitionend', ()=>{ 
-      flyImg.remove(); 
-      cartIcon.classList.add("flash");
-      setTimeout(()=>cartIcon.classList.remove("flash"),200);
-    });
-  }
-
-  // 點擊切換加入/移除購物車
-  if(btn.classList.contains("active")){
-    if(existIndex !== -1) cart.splice(existIndex,1);
-    btn.classList.remove("active");
-    btn.style.background = "#D94A42";
-  } else {
-    if(existIndex !== -1) cart[existIndex].quantity += qty;
-    else cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['類別']});
-    btn.classList.add("active");
-    btn.style.background = "#27ae60";
-  }
-
-  updateCartBar();
-}
-
-// ===== 更新購物車條 =====
-function updateCartBar(){
-  const cartBar = document.getElementById("cartBar");
-  const badge = document.getElementById("cartBadge");
-  if(cart.length===0){ 
-    cartBar.style.display="none"; 
-    badge.style.display="none";
-    return; 
-  }
-  const totalQty = cart.reduce((sum,i)=>sum+i.quantity,0);
-  const totalAmt = cart.reduce((sum,i)=>sum+i.quantity*i.price,0);
-  document.getElementById("cartInfo").textContent=`🛒 ${totalQty} 件 | ${totalAmt} 元`;
-  cartBar.style.display="flex";
-  badge.style.display="block";
-  badge.textContent = totalQty;
-}
-
-// ===== 打開/關閉購物車 =====
-const cartModal = document.getElementById("cartModal");
-document.getElementById("viewCartBtn").onclick = () => { renderCart(); cartModal.style.display="flex"; }
-document.getElementById("cartClose").onclick = () => { cartModal.style.display="none"; }
-
-function renderCart(){
-  const container=document.getElementById("cartItems");
-  container.innerHTML="";
-  let total=0;
-  cart.forEach(item=>{
-    const subtotal=item.price*item.quantity;
-    total+=subtotal;
-    const div=document.createElement("div");
-    div.textContent=`${item.name} ${item.quantity} x ${item.price} = ${subtotal} 元`;
-    container.appendChild(div);
-  });
-  document.getElementById("cartTotal").textContent=total;
-  updateCartBar();
-}
-
-// ===== 外送自動帶入舊資料 =====
-async function fetchUserData() {
-  if(!userId) return;
-  const res = await fetch(`${API_URL}?action=getUser&userId=${userId}`);
-  const result = await res.json();
-  if(result.user){
-    document.getElementById("receiverName").value = result.user.name || "";
-    document.getElementById("receiverPhone").value = result.user.phone || "";
-    document.getElementById("receiverAddress").value = result.user.address || "";
-  }
-}
-
-// ===== 取貨方式切換 =====
-document.getElementById("deliveryMethod").onchange = function(){
-  const val = this.value;
-  if(val === "自取"){ 
-    document.getElementById("selfPickup").style.display = "block"; 
-    document.getElementById("deliveryForm").style.display = "none"; 
-  } else if(val === "外送"){ 
-    document.getElementById("selfPickup").style.display = "none"; 
-    document.getElementById("deliveryForm").style.display = "block"; 
-    fetchUserData(); 
-  } else {
-    document.getElementById("selfPickup").style.display = "none";
-    document.getElementById("deliveryForm").style.display = "none";
-  }
 }
 
 // ===== 結帳 =====
-document.getElementById("checkoutBtn").onclick = async function() {
+document.getElementById("checkoutBtn").onclick = async function(){
   if(cart.length===0){ alert("購物車是空的"); return; }
 
-  const totalAmount = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
   const deliveryMethod = document.getElementById("deliveryMethod").value;
-  if(!deliveryMethod){ alert("請選擇取貨方式"); return; }
-
   let shippingFee=0, receiverName="", receiverPhone="", receiverAddress="", pickupStore="";
 
   if(deliveryMethod==="外送"){
-    if(totalAmount<1500){ alert("外送金額需達1500元以上"); return; }
     receiverName=document.getElementById("receiverName").value;
     receiverPhone=document.getElementById("receiverPhone").value;
     receiverAddress=document.getElementById("receiverAddress").value;
-    if(!receiverName||!receiverPhone||!receiverAddress){ alert("請完整填寫收件資訊"); return; }
+    if(!receiverName||!receiverPhone||!receiverAddress){ alert("請填寫完整收件資訊"); return; }
   } else {
     pickupStore=document.getElementById("pickupStore").value;
     if(!pickupStore){ alert("請選擇取貨門市"); return; }
   }
 
+  const totalAmount = cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
   const paymentMethod=document.getElementById("paymentMethod").value;
 
   const data={ 
@@ -422,64 +225,77 @@ document.getElementById("checkoutBtn").onclick = async function() {
     items:cart
   };
 
-  // ===== 下單 =====
-  const resOrder = await fetch(API_URL, {
-    method:'POST',
-    body:JSON.stringify(data)
-  });
-  const resultOrder = await resOrder.json();
+  try{
+    const resOrder = await fetch(API_URL,{method:'POST',body:JSON.stringify(data)});
+    const resultOrder = await resOrder.json();
 
-  alert("訂單完成，單號："+resultOrder.orderId);
+    // ===== 傳送 LIFF 訊息 =====
+    const flex = buildOrderFlex({ ...data, orderId: resultOrder.orderId });
+    await liff.sendMessages([{
+      type:"flex",
+      altText:`訂單 ${resultOrder.orderId}`,
+      contents:flex.contents
+    }]);
 
-  // ===== 清空購物車 =====
-  cart=[]; updateCartBar(); cartModal.style.display="none";
-  products.forEach(p=>{
-    const idName = encodeURIComponent(p['商品名稱']);
-    const span = document.getElementById(`qty-${idName}`);
-    if(span) span.textContent="1";
-  });
+    alert("訂單完成，已傳送至 LINE");
 
-  // ===== LIFF 傳 Flex 訊息（前端直接抓資料） =====
-  try {
-    const resFlex = await fetch(`${API_URL}?action=orderDetail&orderId=${resultOrder.orderId}`);
-    const orderData = await resFlex.json();
-
-    // 檢查 orderData 是否有 items
-    if(!orderData || !orderData.items || orderData.items.length===0){
-      throw new Error("訂單明細空");
-    }
-
-    const flexMsg = {
-      type: "flex",
-      altText: `訂單 ${resultOrder.orderId}`,
-      contents: buildOrderFlex(orderData).contents
-    };
-
-    await liff.sendMessages([flexMsg]);
-  } catch(e){
-    console.error("LIFF 傳 Flex 失敗", e);
-
-    // fallback 傳文字訊息
-    try {
-      await liff.sendMessages([{
-        type:"text",
-        text:`checkout ${resultOrder.orderId}`
-      }]);
-    } catch(err){
-      console.error("文字 fallback 也失敗", err);
-    }
-
-    alert("訂單已成立，但 LIFF 傳訊息失敗，請手動查看訂單。");
-    if(e.message && e.message.includes("user doesn't grant required permissions")) {
-      alert("您尚未授權 LIFF 發送訊息給您，請先點擊授權按鈕。");
-    }
+    // ===== 清空購物車 =====
+    cart=[]; updateCartBar();
+  }catch(e){
+    console.error(e);
+    alert("訂單已建立，但傳送 LINE 訊息失敗");
   }
 };
 
+// ===== Flex 訂單卡片 =====
+function buildOrderFlex(order){
+  const itemBoxes = order.items.map(i=>({
+    type:"box",
+    layout:"horizontal",
+    spacing:"sm",
+    contents:[
+      { type:"text", text:i.name, size:"sm", flex:5, wrap:true },
+      { type:"text", text:`${i.quantity} x ${i.price}`, size:"sm", flex:2, align:"end" },
+      { type:"text", text:`${i.quantity*i.price}`, size:"sm", flex:2, align:"end", weight:"bold" }
+    ]
+  }));
+
+  return {
+    type:"flex",
+    altText:`訂單 ${order.orderId}`,
+    contents:{
+      type:"bubble",
+      size:"mega",
+      header:{ type:"box", layout:"vertical", contents:[
+        { type:"text", text:"訂單明細", weight:"bold", size:"xl" },
+        { type:"text", text:`訂單編號：${order.orderId}`, size:"sm", color:"#888" }
+      ]},
+      body:{ type:"box", layout:"vertical", spacing:"md", contents:[
+        { type:"text", text:`取貨方式：${order.deliveryMethod}`, size:"sm" },
+        ...(order.deliveryMethod==="外送"?[
+          { type:"text", text:`收件人：${order.receiverName}`, size:"sm" },
+          { type:"text", text:`電話：${order.receiverPhone}`, size:"sm" },
+          { type:"text", text:`地址：${order.receiverAddress}`, size:"sm", wrap:true }
+        ]:[
+          { type:"text", text:`門市：${order.pickupStore}`, size:"sm" }
+        ]),
+        { type:"separator", margin:"md" },
+        { type:"box", layout:"vertical", spacing:"xs", contents:itemBoxes },
+        { type:"separator", margin:"md" },
+        { type:"box", layout:"horizontal", contents:[
+          { type:"text", text:"總金額", size:"md", weight:"bold", flex:6 },
+          { type:"text", text:`${order.totalAmount} 元`, size:"md", weight:"bold", align:"end", flex:4 }
+        ]}
+      ]},
+      footer:{ type:"box", layout:"horizontal", contents:[
+        { type:"button", style:"primary", action:{ type:"uri", label:"查看訂單", uri: window.location.href }, color:"#27ae60" }
+      ]}
+    }
+  };
+}
 
 // ===== 初始化 =====
 initLIFF().then(fetchProducts);
-
 </script>
 
 
