@@ -1,41 +1,34 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>生鮮蔬果購物商城</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 /* ======== 全站風格 ======== */
 body{
     font-family:"Microsoft JhengHei",Arial,sans-serif;
     margin:0;padding:0;background:#f5f5f5;
 }
-
-/* ======== Header ======== */
 header{
-    background:#7ed6df; /* 與分類按鈕同色 */
-    color:white;padding:1.2em;
+    background:#7ed6df;color:white;padding:1.2em;
     text-align:center;
     box-shadow:0 2px 5px rgba(0,0,0,0.2);
 }
 header h1{margin:0;font-size:1.6em;}
 header p{margin:0.3em 0 0;font-size:0.95em;}
-
 .container{width:95%;max-width:1200px;margin:1.5em auto;}
-
-/* ======== 分類 ======== */
 .categories{
     display:flex;gap:0.4em;flex-wrap:wrap;
     justify-content:center;margin-bottom:1em;
 }
 .category-btn{
-    padding:0.5em 1em;background:#eee;border:none;
+    padding:0.5em 1em;background:#7ed6df;border:none;
     cursor:pointer;border-radius:20px;
-    transition:0.3s;font-weight:500;font-size:0.9em;
+    transition:0.3s;font-weight:500;font-size:0.9em;color:white;
 }
-.category-btn:hover{ background:#7ed6df;color:white; }
-.category-btn.active{ background:#7ed6df;color:white; }
+.category-btn:hover{ background:#63c5b5;color:white; }
+.category-btn.active{ box-shadow:0 2px 5px rgba(0,0,0,0.2); }
 
 /* ======== 商品卡片 ======== */
 .products{
@@ -44,25 +37,24 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
 }
 .product-card{
     background:white;
-    border-radius:8px;
+    border-radius:12px;
     padding:0.8em;
-    border:2px solid #ccc; /* 淺灰色線條 */
+    border:2px solid #ccc;
     box-shadow:0 2px 8px rgba(0,0,0,0.08);
     transition:0.3s;
+    display:flex; flex-direction:column;
 }
 .product-card:hover{
     transform:translateY(-3px);
     box-shadow:0 4px 16px rgba(0,0,0,0.15);
 }
 .product-card img{
-    width:100%;height:140px;object-fit:cover;border-radius:6px;
+    width:100%;height:140px;object-fit:cover;border-radius:8px;
 }
+.product-card h3{margin:0.4em 0 0.2em 0;font-size:1em;}
+.product-card p{margin:0.2em 0;font-size:0.85em;color:#555;}
 .product-card .price{ font-weight:bold;color:#ff5757; }
-
-/* ======== 數量區 ======== */
-.quantity-control{
-    margin-top:0.4em;display:flex;align-items:center;gap:5px;
-}
+.quantity-control{margin-top:0.4em;display:flex;align-items:center;gap:5px;}
 .quantity-control button{
     width:32px;height:32px;border:none;
     background:#7ed6df;color:white;font-size:1.1em;
@@ -73,7 +65,7 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     background:#B22222;color:white;cursor:pointer;
 }
 
-/* ======== 購物條（Uber Eats 風格） ======== */
+/* ======== 購物條 ======== */
 #cartBar{
     position:fixed;
     bottom:0;left:0;
@@ -88,30 +80,20 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     display:flex;
     justify-content:space-between;
     align-items:center;
-    animation:slideUp 0.35s ease;
 }
-
-@keyframes slideUp{
-  from{ transform:translateY(100%); opacity:0;}
-  to{ transform:translateY(0); opacity:1;}
-}
-
-/* 左半：訂單小計 */
 #cartLeft{
-    width:45%;
+    width:50%;
     text-align:left;
     font-size:1.1em;
 }
 #cartLeft .label{color:#222;font-weight:bold;}
 #cartLeft .amount{color:red;font-weight:bold;font-size:1.15em;}
-
-/* 右半：結帳按鈕 */
 #cartRight{
     width:50%;
     display:flex;justify-content:flex-end;
 }
 #viewCartBtn{
-    padding:0.5em 2em;
+    padding:0.6em 2em;
     border:none;cursor:pointer;
     font-size:1.05em;font-weight:bold;
     color:white;
@@ -125,7 +107,7 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     box-shadow:0 6px 14px rgba(255,60,60,0.5);
 }
 
-/* ======== 模態窗 ======== */
+/* ======== Modal 卡片式 ======== */
 .modal{
     display:none;position:fixed;top:0;left:0;
     width:100%;height:100%;
@@ -134,41 +116,39 @@ header p{margin:0.3em 0 0;font-size:0.95em;}
     justify-content:center;padding-top:6%;
 }
 .modal-content{
-    background:white;padding:1.5em;border-radius:12px;
-    width:92%;max-height:90%;overflow-y:auto;
+    background:white;padding:1.5em;border-radius:16px;
+    max-width:500px;width:90%;box-shadow:0 8px 25px rgba(0,0,0,0.25);
+    display:flex;flex-direction:column;gap:1em;
 }
 .modal-close{
     float:right;font-size:1.4em;color:red;cursor:pointer;
 }
-
-/* ======== 結帳欄位佈局 ======== */
-#deliveryForm input{
-    width:48%;
-    margin-bottom:0.6em;
-    padding:0.4em 0.5em;
-    border-radius:6px;border:1px solid #ccc;font-size:0.9em;
+.section-title{
+    font-weight:bold;font-size:1.1em;border-bottom:1px solid #eee;
+    padding-bottom:0.3em;margin-bottom:0.5em;
 }
-#receiverAddress{
-    width:100%;
+.cart-items{display:flex; flex-direction:column; gap:0.8em; max-height:200px; overflow-y:auto;}
+.cart-item{
+    display:flex;align-items:center;background:#f9f9f9;
+    padding:0.5em;border-radius:10px;gap:0.5em;
 }
-
-/* ======== 下拉選單尺寸調整 ======== */
-select{
-    transform:scale(1.25); /* 放大 25% */
-    transform-origin:left center;
-    padding:0.35em 0.5em;
-    margin-bottom:0.6em;
+.cart-item img{width:60px;height:60px;object-fit:cover;border-radius:6px;}
+.item-info{flex:1;display:flex;flex-direction:column;}
+.item-name{font-weight:bold;}
+.item-qty{font-size:0.9em;color:#555;}
+.item-subtotal{font-weight:bold;color:#ff5757;}
+.total{display:flex;justify-content:flex-end;font-weight:bold;font-size:1.1em;padding-top:0.5em;border-top:1px solid #eee;}
+.form-select{padding:0.5em;border-radius:10px;border:1px solid #ccc;font-size:1em;width:100%;background:#fdfdfd;}
+.delivery-card{background:#f9f9f9;border-radius:12px;padding:0.8em;display:flex;flex-direction:column;gap:0.5em;}
+.delivery-card .row{display:flex;gap:0.5em;}
+.delivery-card input{flex:1;padding:0.5em;border-radius:8px;border:1px solid #ccc;}
+.btn-checkout{
+    width:100%;padding:0.7em;border:none;border-radius:12px;
+    font-weight:bold;font-size:1em;color:white;
+    background:linear-gradient(90deg,#7ed6df,#22a6b3);
+    cursor:pointer;transition:0.3s;
 }
-
-/* ======== 響應式 ======== */
-@media (max-width:600px){
-    .products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
-    .product-card img{height:120px;}
-    .category-btn{padding:0.5em 0.8em;font-size:0.85em;}
-    header h1{font-size:1.4em;}
-    header p{font-size:0.85em;}
-    #deliveryForm input{width:100%;}
-}
+.btn-checkout:hover{transform:scale(1.03);box-shadow:0 5px 15px rgba(0,0,0,0.2);}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
@@ -184,7 +164,7 @@ select{
     <div id="productContainer" class="products"></div>
 </div>
 
-<!-- ======== Uber Eats 購物條 ======== -->
+<!-- 購物條 -->
 <div id="cartBar">
     <div id="cartLeft">
         <span class="label">訂單小計：</span>
@@ -195,43 +175,42 @@ select{
     </div>
 </div>
 
-<!-- ======== 購物車 Modal ======== -->
+<!-- 購物車 Modal -->
 <div class="modal" id="cartModal">
   <div class="modal-content">
     <span class="modal-close" id="cartClose">&times;</span>
 
-    <h3>購物車內容</h3>
-    <div id="cartItems"></div>
-
-    <p>總額：<span id="cartTotal">0</span> 元</p>
-
-    <h4>付款方式</h4>
-    <select id="paymentMethod">
-        <option value="現金">現金</option>
-        <option value="信用卡">信用卡</option>
-        <option value="Line Pay">Line Pay</option>
-    </select>
-
-    <h4>取貨方式</h4>
-    <select id="deliveryMethod">
-        <option value="" disabled selected>請選擇</option>
-        <option value="自取">自取</option>
-        <option value="外送">外送</option>
-    </select>
-
-    <div id="selfPickup" style="display:none;">
-        <p>選擇門市</p>
-        <select id="pickupStore"></select>
+    <h3 class="section-title">購物車內容</h3>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="total">
+      <span>總額：</span>
+      <span id="cartTotal">0 元</span>
     </div>
 
-    <div id="deliveryForm" style="display:none;">
-        <p>收件人資料</p>
-        <input id="receiverName" placeholder="姓名" />
-        <input id="receiverPhone" placeholder="電話" />
-        <input id="receiverAddress" placeholder="地址" />
+    <h4 class="section-title">付款方式</h4>
+    <select id="paymentMethod" class="form-select">
+      <option value="信用卡">信用卡</option>
+      <option value="現金">現金</option>
+      <option value="Line Pay">Line Pay</option>
+    </select>
+
+    <h4 class="section-title">取貨方式</h4>
+    <select id="deliveryMethod" class="form-select">
+      <option value="" disabled selected>請選擇</option>
+      <option value="自取">自取</option>
+      <option value="外送">外送</option>
+    </select>
+
+    <div id="deliveryForm" class="delivery-card">
+      <h4>收件人資料</h4>
+      <div class="row">
+        <input id="receiverName" placeholder="姓名">
+        <input id="receiverPhone" placeholder="電話">
+      </div>
+      <input id="receiverAddress" placeholder="地址">
     </div>
 
-    <button id="checkoutBtn">確認結帳</button>
+    <button id="checkoutBtn" class="btn-checkout">確認結帳</button>
   </div>
 </div>
 
@@ -245,384 +224,214 @@ let userId = "";
 let userName = "";
 let pickupStores = [];
 
-/* ================================
-   🚀 LIFF 初始化（讀取 LINE 使用者）
-================================ */
+/* ================================ LIFF 初始化 ================================ */
 async function initLIFF() {
     await liff.init({ liffId: "2008573741-WGE2G7lZ" });
-
     if (liff.isLoggedIn()) {
         const profile = await liff.getProfile();
         userId = profile.userId;
         userName = profile.displayName;
         document.getElementById("greeting").textContent = `${userName} 您好`;
-    } else {
-        liff.login();
-    }
+    } else { liff.login(); }
 }
 
-/* ================================
-   🚀 抓取所有商品 & 門市
-================================ */
+/* ================================ 抓取商品 & 門市 ================================ */
 async function fetchProducts() {
     try {
         const res = await fetch(API_URL + "?action=products");
         products = await res.json();
-
         categories = [...new Set(products.map(p => p["類別"]))].filter(Boolean);
-
         renderCategories();
         if (categories[0]) renderProducts(categories[0]);
 
-        // 取得門市
         const storeRes = await fetch(API_URL + "?action=stores");
         pickupStores = await storeRes.json();
-
         const storeSelect = document.getElementById("pickupStore");
-        pickupStores.forEach(s => {
-            let op = document.createElement("option");
-            op.value = s;
-            op.textContent = s;
-            storeSelect.appendChild(op);
-        });
-
-    } catch (e) {
-        console.error("抓取商品或門市失敗:", e);
-    }
+        if(storeSelect) pickupStores.forEach(s => storeSelect.appendChild(new Option(s,s)));
+    } catch (e) { console.error("抓取商品或門市失敗:", e); }
 }
 
-/* ================================
-   🚀 顯示分類按鈕
-================================ */
+/* ================================ 渲染分類按鈕 ================================ */
 function renderCategories() {
     const container = document.getElementById("categoryContainer");
     container.innerHTML = "";
-
     categories.forEach(cat => {
         const btn = document.createElement("button");
-        btn.textContent = cat;
-        btn.className = "category-btn";
-
+        btn.textContent = cat; btn.className = "category-btn";
         btn.onclick = () => {
             document.querySelectorAll(".category-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             renderProducts(cat);
         };
-
         container.appendChild(btn);
     });
-
-    if (container.firstChild) container.firstChild.classList.add("active");
+    if(container.firstChild) container.firstChild.classList.add("active");
 }
 
-/* ================================
-   🚀 顯示商品 Cards
-================================ */
+/* ================================ 渲染商品 ================================ */
 function renderProducts(category) {
     const container = document.getElementById("productContainer");
     container.innerHTML = "";
-
-    products
-        .filter(p => p["類別"]?.trim() === category?.trim())
-        .forEach(p => {
-            const idName = encodeURIComponent(p["商品名稱"]);
-
-            const card = document.createElement("div");
-            card.className = "product-card";
-
-            card.innerHTML = `
-                <img src="${p["商品照片"]}" alt="${p["商品名稱"]}">
-                <h3>${p["商品名稱"]}</h3>
-                <p>${p["特色說明"] || ''}</p>
-                <p>單位：${p["單位"]}</p>
-                <p class="price">${p["售價"]} 元</p>
-
-                <p class="quantity-control">
-                    <button onclick="changeQty('${idName}', -1)">-</button>
-                    <span id="qty-${idName}">1</span>
-                    <button onclick="changeQty('${idName}', 1)">+</button>
-
-                    <button class="add-cart"
-                        onclick="addToCartWithAnimation('${idName}', this)">
-                        🛒
-                    </button>
-                </p>
-            `;
-
-            container.appendChild(card);
-        });
+    products.filter(p=>p["類別"]?.trim()===category?.trim()).forEach(p=>{
+        const idName = encodeURIComponent(p["商品名稱"]);
+        const card = document.createElement("div"); card.className="product-card";
+        card.innerHTML=`
+            <img src="${p["商品照片"]}" alt="${p["商品名稱"]}">
+            <h3>${p["商品名稱"]}</h3>
+            <p>${p["特色說明"]||''}</p>
+            <p>單位：${p["單位"]}</p>
+            <p class="price">${p["售價"]} 元</p>
+            <p class="quantity-control">
+                <button onclick="changeQty('${idName}', -1)">-</button>
+                <span id="qty-${idName}">1</span>
+                <button onclick="changeQty('${idName}', 1)">+</button>
+                <button class="add-cart" onclick="addToCartWithAnimation('${idName}', this)">🛒</button>
+            </p>
+        `;
+        container.appendChild(card);
+    });
 }
 
-/* ================================
-   🚀 數量 ±
-================================ */
+/* ================================ 數量 ± ================================ */
 function changeQty(idName, delta) {
-    const span = document.getElementById(`qty-${idName}`);
-    let qty = parseInt(span.textContent);
-    qty += delta;
-    if (qty < 1) qty = 1;
-
-    span.textContent = qty;
-
-    // 放大動畫
-    span.style.transition = "0.2s";
-    span.style.transform = "scale(1.3)";
-    setTimeout(() => span.style.transform = "scale(1)", 200);
-
-    // 若商品已在購物車 → 更新數量
-    const name = decodeURIComponent(idName);
-    const exist = cart.find(c => c.name === name);
-
-    if (exist) {
-        exist.quantity = qty;
-        updateCartBar();
-    }
+    const span=document.getElementById(`qty-${idName}`);
+    let qty=parseInt(span.textContent); qty+=delta;
+    if(qty<1) qty=1;
+    span.textContent=qty;
+    span.style.transition="0.2s"; span.style.transform="scale(1.3)";
+    setTimeout(()=>span.style.transform="scale(1)",200);
+    const name=decodeURIComponent(idName);
+    const exist=cart.find(c=>c.name===name);
+    if(exist){ exist.quantity=qty; updateCartBar(); }
 }
-/* ================================
-   🚀 加入購物車動畫（飛入動畫）
-================================ */
-function addToCartWithAnimation(idName, btn) {
-    const name = decodeURIComponent(idName);
-    const qty = parseInt(document.getElementById(`qty-${idName}`).textContent);
-    const product = products.find(p => p["商品名稱"] === name);
-    const existIndex = cart.findIndex(c => c.name === name);
 
-    /* === 飛向購物條動畫 === */
-    const img = btn.closest(".product-card").querySelector("img");
-    const cartBar = document.getElementById("cartBar");
+/* ================================ 加入購物車動畫 ================================ */
+function addToCartWithAnimation(idName, btn){
+    const name=decodeURIComponent(idName);
+    const qty=parseInt(document.getElementById(`qty-${idName}`).textContent);
+    const product=products.find(p=>p["商品名稱"]===name);
+    const existIndex=cart.findIndex(c=>c.name===name);
 
-    if (img && cartBar) {
-        const clone = img.cloneNode(true);
-        const imgRect = img.getBoundingClientRect();
-        const cartRect = cartBar.getBoundingClientRect();
-
-        clone.style.position = "fixed";
-        clone.style.top = imgRect.top + "px";
-        clone.style.left = imgRect.left + "px";
-        clone.style.width = imgRect.width + "px";
-        clone.style.height = imgRect.height + "px";
-        clone.style.borderRadius = "8px";
-        clone.style.zIndex = 99999;
-        clone.style.transition = "0.7s cubic-bezier(0.6, 0, 0.35, 1), opacity 0.7s";
-
+    // 飛入動畫
+    const img=btn.closest(".product-card").querySelector("img");
+    const cartBar=document.getElementById("cartBar");
+    if(img && cartBar){
+        const clone=img.cloneNode(true);
+        const imgRect=img.getBoundingClientRect();
+        const cartRect=cartBar.getBoundingClientRect();
+        clone.style.position="fixed";
+        clone.style.top=imgRect.top+"px";
+        clone.style.left=imgRect.left+"px";
+        clone.style.width=imgRect.width+"px";
+        clone.style.height=imgRect.height+"px";
+        clone.style.borderRadius="8px";
+        clone.style.zIndex=99999;
+        clone.style.transition="0.7s cubic-bezier(0.6,0,0.35,1), opacity 0.7s";
         document.body.appendChild(clone);
-
-        requestAnimationFrame(() => {
-            const dx = cartRect.left + cartRect.width / 2 - (imgRect.left + imgRect.width / 2);
-            const dy = cartRect.top - (imgRect.top + imgRect.height / 2);
-
-            clone.style.transform = `translate(${dx}px, ${dy}px) scale(0.1)`;
-            clone.style.opacity = 0;
+        requestAnimationFrame(()=>{
+            const dx=cartRect.left+cartRect.width/2-(imgRect.left+imgRect.width/2);
+            const dy=cartRect.top-(imgRect.top+imgRect.height/2);
+            clone.style.transform=`translate(${dx}px,${dy}px) scale(0.1)`;
+            clone.style.opacity=0;
         });
-
-        clone.addEventListener("transitionend", () => clone.remove());
+        clone.addEventListener("transitionend",()=>clone.remove());
     }
 
-    /* === 加入 / 更新購物車 === */
-    if (existIndex !== -1) {
-        cart[existIndex].quantity += qty;
-    } else {
-        cart.push({
-            name,
-            price: parseInt(product["售價"]),
-            quantity: qty,
-            category: product["類別"]
-        });
-    }
-
+    if(existIndex!==-1){ cart[existIndex].quantity+=qty; }
+    else{ cart.push({name, price:parseInt(product["售價"]), quantity:qty, category:product["類別"]}); }
     btn.classList.add("active");
-
     updateCartBar();
 }
 
-/* ================================
-   🚀 更新購物條（Uber Eats 風格）
-================================ */
-function updateCartBar() {
-    const bar = document.getElementById("cartBar");
-
-    if (cart.length === 0) {
-        bar.style.display = "none";
-        return;
-    }
-
-    const totalQty = cart.reduce((sum, i) => sum + i.quantity, 0);
-    const totalAmt = cart.reduce((sum, i) => sum + i.quantity * i.price, 0);
-
-    document.getElementById("cartAmount").textContent = totalAmt + " 元";
-
-    bar.style.display = "flex";
+/* ================================ 更新購物條 ================================ */
+function updateCartBar(){
+    const bar=document.getElementById("cartBar");
+    if(cart.length===0){ bar.style.display="none"; return; }
+    const totalAmt=cart.reduce((sum,i)=>sum+i.price*i.quantity,0);
+    document.getElementById("cartAmount").textContent=totalAmt+" 元";
+    bar.style.display="flex";
 }
 
-/* ================================
-   🚀 打開購物車 Modal
-================================ */
-const cartModal = document.getElementById("cartModal");
-document.getElementById("cartClose").onclick = () => (cartModal.style.display = "none");
-document.getElementById("viewCartBtn").onclick = () => {
-    renderCart();
-    cartModal.style.display = "flex";
-};
+/* ================================ 打開/關閉 Modal ================================ */
+const cartModal=document.getElementById("cartModal");
+document.getElementById("cartClose").onclick=()=>cartModal.style.display="none";
+document.getElementById("viewCartBtn").onclick=()=>{
+    renderCart(); cartModal.style.display="flex";
+}
 
-/* ================================
-   🚀 渲染購物車內容
-================================ */
-function renderCart() {
-    const container = document.getElementById("cartItems");
-    container.innerHTML = "";
-
-    let total = 0;
-
-    cart.forEach(item => {
-        const subtotal = item.price * item.quantity;
-        total += subtotal;
-
-        const div = document.createElement("div");
-        div.textContent = `${item.name} ${item.quantity} x ${item.price} = ${subtotal} 元`;
+/* ================================ 渲染購物車內容 ================================ */
+function renderCart(){
+    const container=document.getElementById("cartItems");
+    container.innerHTML="";
+    let total=0;
+    cart.forEach(item=>{
+        const subtotal=item.price*item.quantity; total+=subtotal;
+        const div=document.createElement("div"); div.className="cart-item";
+        div.innerHTML=`
+            <img src="https://via.placeholder.com/60" alt="${item.name}">
+            <div class="item-info">
+                <p class="item-name">${item.name}</p>
+                <p class="item-qty">${item.quantity} x ${item.price} 元</p>
+            </div>
+            <p class="item-subtotal">${subtotal} 元</p>
+        `;
         container.appendChild(div);
     });
-
-    document.getElementById("cartTotal").textContent = total;
+    document.getElementById("cartTotal").textContent=total;
     updateCartBar();
 }
 
-/* ================================
-   🚀 外送自動填入舊資料
-================================ */
-async function fetchUserData() {
-    if (!userId) return;
-
-    const res = await fetch(API_URL + "?action=getUser&userId=" + userId);
-    const result = await res.json();
-
-    if (result.user) {
-        document.getElementById("receiverName").value = result.user.name || "";
-        document.getElementById("receiverPhone").value = result.user.phone || "";
-        document.getElementById("receiverAddress").value = result.user.address || "";
+/* ================================ 外送自動填入舊資料 ================================ */
+async function fetchUserData(){
+    if(!userId) return;
+    const res=await fetch(API_URL+"?action=getUser&userId="+userId);
+    const result=await res.json();
+    if(result.user){
+        document.getElementById("receiverName").value=result.user.name||"";
+        document.getElementById("receiverPhone").value=result.user.phone||"";
+        document.getElementById("receiverAddress").value=result.user.address||"";
     }
 }
 
-/* ================================
-   🚀 取貨方式切換
-================================ */
-document.getElementById("deliveryMethod").onchange = function () {
-    const v = this.value;
+/* ================================ 取貨方式切換 ================================ */
+document.getElementById("deliveryMethod").onchange=function(){
+    const v=this.value;
+    if(v==="自取"){ document.getElementById("selfPickup")?.style.display="block"; document.getElementById("deliveryForm").style.display="none"; }
+    else if(v==="外送"){ document.getElementById("selfPickup")?.style.display="none"; document.getElementById("deliveryForm").style.display="flex"; fetchUserData(); }
+    else{ document.getElementById("selfPickup")?.style.display="none"; document.getElementById("deliveryForm").style.display="none"; }
+}
 
-    if (v === "自取") {
-        document.getElementById("selfPickup").style.display = "block";
-        document.getElementById("deliveryForm").style.display = "none";
-    } else if (v === "外送") {
-        document.getElementById("selfPickup").style.display = "none";
-        document.getElementById("deliveryForm").style.display = "block";
-        fetchUserData();
-    } else {
-        document.getElementById("selfPickup").style.display = "none";
-        document.getElementById("deliveryForm").style.display = "none";
-    }
+/* ================================ 結帳 ================================ */
+document.getElementById("checkoutBtn").onclick=async function(){
+    if(cart.length===0){ alert("購物車是空的！"); return; }
+    const payment=document.getElementById("paymentMethod").value;
+    const delivery=document.getElementById("deliveryMethod").value;
+    const name=document.getElementById("receiverName").value;
+    const phone=document.getElementById("receiverPhone").value;
+    const address=document.getElementById("receiverAddress").value;
+    if(!payment || !delivery){ alert("請選擇付款方式與取貨方式！"); return; }
+    if(delivery==="外送" && (!name || !phone || !address)){ alert("請填寫完整收件人資料！"); return; }
+
+    const payload={ userId,userName,cart,payment,delivery,name,phone,address };
+    try{
+        await fetch(API_URL,{
+            method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)
+        });
+        alert("訂單已送出！");
+        cart=[]; updateCartBar(); renderCart(); cartModal.style.display="none";
+    }catch(e){ alert("訂單送出失敗:"+e); }
+}
+
+/* ================================ 初始化 ================================ */
+window.onload=function(){
+    initLIFF();
+    fetchProducts();
 };
-
-/* ================================
-   🚀 結帳送出訂單
-================================ */
-document.getElementById("checkoutBtn").onclick = async function () {
-    if (cart.length === 0) {
-        alert("購物車是空的");
-        return;
-    }
-
-    const totalAmount = cart.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    const deliveryMethod = document.getElementById("deliveryMethod").value;
-
-    if (!deliveryMethod) {
-        alert("請選擇取貨方式");
-        return;
-    }
-
-    let receiverName = "",
-        receiverPhone = "",
-        receiverAddress = "",
-        pickupStore = "";
-
-    if (deliveryMethod === "外送") {
-        if (totalAmount < 1500) {
-            alert("外送需滿 1500 元");
-            return;
-        }
-
-        receiverName = document.getElementById("receiverName").value;
-        receiverPhone = document.getElementById("receiverPhone").value;
-        receiverAddress = document.getElementById("receiverAddress").value;
-
-        if (!receiverName || !receiverPhone || !receiverAddress) {
-            alert("請完整填寫外送資訊");
-            return;
-        }
-    } else {
-        pickupStore = document.getElementById("pickupStore").value;
-        if (!pickupStore) {
-            alert("請選擇取貨門市");
-            return;
-        }
-    }
-
-    const paymentMethod = document.getElementById("paymentMethod").value;
-
-    const data = {
-        userId,
-        userName,
-        totalAmount,
-        paymentMethod,
-        deliveryMethod,
-        receiverName,
-        receiverPhone,
-        receiverAddress,
-        pickupStore,
-        items: cart
-    };
-
-    // 送出訂單
-    const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify(data)
-    });
-    const result = await res.json();
-
-    alert("訂單完成，單號：" + result.orderId);
-
-    cart = [];
-    updateCartBar();
-    cartModal.style.display = "none";
-
-    // 重設商品數量
-    products.forEach(p => {
-        const idName = encodeURIComponent(p["商品名稱"]);
-        const span = document.getElementById("qty-" + idName);
-        if (span) span.textContent = "1";
-    });
-
-    // Flex Message
-    if (result.flexMsg) {
-        try {
-            await liff.sendMessages([
-                {
-                    type: "flex",
-                    altText: "訂單完成通知",
-                    contents: result.flexMsg
-                }
-            ]);
-        } catch (err) {
-            console.error("LIFF 訊息送出失敗：", err);
-        }
-    }
-};
-
-/* ================================
-   🚀 初始化
-================================ */
-initLIFF().then(fetchProducts);
 </script>
+
 </body>
 </html>
+
 
 
 
