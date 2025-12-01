@@ -159,10 +159,16 @@ header p{font-size:0.85em;}
   <div id="orderDetailContent"></div>
   <button onclick="closeOrderDetail()">返回</button>
 </div>
-
+    </div>
+    <div id="cartBar">
+  <span id="cartInfo"></span>
+  <span id="cartBadge" style="background:red;color:white;border-radius:50%;padding:2px 6px;position:absolute;top:-5px;right:-5px;display:none;"></span>
+  <button id="viewCartBtn">查看購物車</button>
 </div>
+
+
 <script>
-const API_URL ="https://script.google.com/macros/s/AKfycbzhDVb5wIyeUSqTie7XyqbvXOZhoOGc3Z8Gszdjijv0vbkb1BPBCP-GFSXoDvluHebU/exec";
+const API_URL ="https://script.google.com/macros/s/AKfycbwELhOz4pTJddR4dFbdr3r4pvFK2PPpMyw0BJupYvWsF-OcIw4Ad0LS4hlP9wa3LC9q/exec";
 let products=[], categories=[], cart=[], userId="", userName="";
 let pickupStores = [];
 
@@ -180,20 +186,24 @@ async function initLIFF(){
 // ===== 取得商品與門市 =====
 async function fetchProducts(){
   try{
-    const res = await fetch(API_URL+"?action=products");
+    // 取得商品
+    const res = await fetch(`${API_URL}?action=products`);
     products = await res.json();
     categories = [...new Set(products.map(p => p['類別']))].filter(Boolean);
     renderCategories();
+
+    // 自動顯示第一個分類
     if(categories[0]) renderProducts(categories[0]);
 
-    const storeRes = await fetch(API_URL+"?action=stores");
+    // 取得門市
+    const storeRes = await fetch(`${API_URL}?action=stores`);
     pickupStores = await storeRes.json();
     const storeSelect = document.getElementById("pickupStore");
-    pickupStores.forEach(s=>{ 
-      const opt=document.createElement("option"); 
-      opt.value=s; 
-      opt.textContent=s; 
-      storeSelect.appendChild(opt); 
+    pickupStores.forEach(s=>{
+      const opt = document.createElement("option");
+      opt.value = s;
+      opt.textContent = s;
+      storeSelect.appendChild(opt);
     });
   }catch(e){ console.error("抓取商品或門市失敗:", e); }
 }
@@ -202,7 +212,7 @@ async function fetchProducts(){
 function renderCategories(){
   const container = document.getElementById("categoryContainer");
   container.innerHTML="";
-  categories.forEach(cat=>{
+  categories.forEach((cat,index)=>{
     const btn=document.createElement("button");
     btn.textContent=cat;
     btn.className="category-btn";
@@ -212,8 +222,10 @@ function renderCategories(){
       renderProducts(cat);
     }
     container.appendChild(btn);
+
+    // 預設第一個分類為 active
+    if(index===0) btn.classList.add("active");
   });
-  if(container.firstChild) container.firstChild.classList.add("active");
 }
 
 // ===== 顯示商品 =====
@@ -253,7 +265,6 @@ function changeQty(idName, delta){
   if(qty<1) qty=1;
   span.textContent = qty;
 
-  // ===== 簡單動畫 =====
   span.style.transition = "transform 0.2s";
   span.style.transform = "scale(1.3)";
   setTimeout(() => { span.style.transform = "scale(1)"; }, 200);
@@ -320,14 +331,18 @@ function addToCartWithAnimation(idName, btn){
 // ===== 更新購物車條 =====
 function updateCartBar(){
   const cartBar = document.getElementById("cartBar");
+  const badge = document.getElementById("cartBadge");
   if(cart.length===0){ 
     cartBar.style.display="none"; 
+    badge.style.display="none";
     return; 
   }
   const totalQty = cart.reduce((sum,i)=>sum+i.quantity,0);
   const totalAmt = cart.reduce((sum,i)=>sum+i.quantity*i.price,0);
   document.getElementById("cartInfo").textContent=`🛒 ${totalQty} 件 | ${totalAmt} 元`;
   cartBar.style.display="flex";
+  badge.style.display="block";
+  badge.textContent = totalQty;
 }
 
 // ===== 打開/關閉購物車 =====
@@ -353,7 +368,7 @@ function renderCart(){
 // ===== 外送自動帶入舊資料 =====
 async function fetchUserData() {
   if(!userId) return;
-  const res = await fetch(API_URL+"?action=getUser&userId="+userId);
+  const res = await fetch(`${API_URL}?action=getUser&userId=${userId}`);
   const result = await res.json();
   if(result.user){
     document.getElementById("receiverName").value = result.user.name || "";
@@ -422,9 +437,7 @@ document.getElementById("checkoutBtn").onclick = async function(){
     if(span) span.textContent="1";
   });
 
-  // ===========================================
-  // ⭐ 使用 LIFF → 傳訊息給 LINE Bot（免費）
-  // ===========================================
+  // ⭐ LIFF 傳訊息給 LINE Bot
   try {
     await liff.sendMessages([{
       type:"text",
@@ -436,9 +449,9 @@ document.getElementById("checkoutBtn").onclick = async function(){
   }
 };
 
-    
 // ===== 初始化 =====
 initLIFF().then(fetchProducts);
+
 </script>
 
 
