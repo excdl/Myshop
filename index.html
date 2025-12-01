@@ -5,67 +5,283 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>生鮮蔬果購物商城</title>
 <style>
-body{font-family:"Microsoft JhengHei",Arial,sans-serif;margin:0;padding:0;background:#f5f5f5;}
-header{background:#8FD6C8;color:white;padding:1.2em;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
+body{
+    font-family:"Microsoft JhengHei",Arial,sans-serif;
+    margin:0;padding:0;
+    background:#f5f5f5;
+}
+
+/* ===== Header ===== */
+header{
+    background:#8FD6C8;
+    color:white;
+    padding:1.2em;
+    text-align:center;
+    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
 header h1{margin:0;font-size:1.6em;}
 header p{margin:0.3em 0 0 0;font-size:0.95em;}
+
+/* ===== Layout ===== */
 .container{width:95%;max-width:1200px;margin:1.5em auto;}
-.categories{display:flex;gap:0.4em;flex-wrap:wrap;margin-bottom:1em;justify-content:center;}
-.category-btn{padding:0.5em 1em;background:#eee;border:none;cursor:pointer;border-radius:20px;transition:0.3s;font-weight:500;font-size:0.9em;}
-.category-btn:hover{background:#7ed6df;color:white;}
-.category-btn.active{background:#7ed6df;color:white;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
-.products{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8em;}
-.product-card{background:white;border-radius:8px;padding:0.8em;box-shadow:0 2px 10px rgba(0,0,0,0.1);display:flex;flex-direction:column;transition:0.3s;position:relative;overflow:hidden;font-size:0.9em;border:2px solid #ff6b6b;}
-.product-card:hover{transform:translateY(-2px);box-shadow:0 3px 12px rgba(0,0,0,0.2);}
-.product-card img{width:100%;height:140px;object-fit:cover;border-radius:6px;transition:0.3s;}
+.categories{
+    display:flex;
+    gap:0.4em;
+    flex-wrap:wrap;
+    margin-bottom:1em;
+    justify-content:center;
+}
+.category-btn{
+    padding:0.5em 1em;
+    background:#eee;
+    border:none;
+    cursor:pointer;
+    border-radius:20px;
+    transition:0.3s;
+    font-weight:500;
+    font-size:0.9em;
+}
+.category-btn:hover{
+    background:#7ed6df;
+    color:white;
+}
+.category-btn.active{
+    background:#7ed6df;
+    color:white;
+    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* ===== Product Cards ===== */
+.products{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+    gap:0.8em;
+}
+.product-card{
+    background:white;
+    border-radius:8px;
+    padding:0.8em;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    display:flex;
+    flex-direction:column;
+    transition:0.3s;
+    position:relative;
+    overflow:hidden;
+    font-size:0.9em;
+    border:2px solid #ccc !important; /* 淺灰色邊框 */
+}
+.product-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 3px 12px rgba(0,0,0,0.2);
+}
+.product-card img{
+    width:100%;
+    height:140px;
+    object-fit:cover;
+    border-radius:6px;
+    transition:0.3s;
+}
 .product-card:hover img{transform:scale(1.03);}
 .product-card h3{margin:0.4em 0 0.2em 0;font-size:1em;}
 .product-card p{margin:0.2em 0;font-size:0.85em;color:#555;}
-.product-card .price{font-weight:bold;color:#ff6b6b;margin-top:0.4em;}
-.quantity-control{margin:0.4em 0;display:flex;align-items:center;gap:5px;justify-content:flex-start;}
-.quantity-control button{width:32px;height:32px;border:none;background:#7ed6df;color:white;border-radius:4px;cursor:pointer;font-weight:bold;}
-.quantity-control span{min-width:28px;text-align:center;display:inline-block;font-weight:bold;}
-.add-cart {width:36px;height:36px;border-radius:6px;background:#fb9d9e !important;color:white;display:flex;align-items:center;justify-content:center;font-size:1.2em;border:none;cursor:pointer;transition:0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
-.add-cart.active {background:#4CAF50 !important;color:white;box-shadow:0 2px 8px rgba(0,0,0,0.5);}
-#cartBar {position: fixed;left: 0;bottom: 0;width: 100%;background:#4CAF50;color:white;display: flex;justify-content: space-between;align-items: center;padding: 0.8em 1em;box-shadow: 0 -2px 5px rgba(0,0,0,0.2);font-weight: bold;font-size: 0.95em;border-top-left-radius: 12px;border-top-right-radius: 12px;display: none;transition: transform 0.2s ease;}
-#cartBar.flash {transform: scale(1.1);}
-#cartBar span#cartInfo {display: flex;align-items: center;gap: 0.5em;}
-#cartBar button#viewCartBtn {background:#fb9d9e;border:none;padding:0.5em 1em;border-radius:6px;color:white;cursor:pointer;font-weight:bold;transition:0.3s;}
-#cartBar button#viewCartBtn:hover { background:#ff4d4d; }
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:flex-start;padding-top:5%;z-index:9999;}
-.modal-content{background:white;padding:1.5em;border-radius:12px;max-height:90%;overflow-y:auto;width:95%;position:relative;font-size:0.9em;}
-.modal-close{position:absolute;top:10px;right:12px;cursor:pointer;color:red;font-weight:bold;font-size:1.2em;}
-#cartItems div{padding:0.3em 0;border-bottom:1px solid #eee;}
+.product-card .price{
+    font-weight:bold;
+    color:#ff6b6b;
+    margin-top:0.4em;
+}
+
+/* ===== Quantity Control ===== */
+.quantity-control{
+    margin:0.4em 0;
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+.quantity-control button{
+    width:32px;height:32px;
+    border:none;
+    background:#7ed6df;
+    color:white;
+    border-radius:4px;
+    cursor:pointer;
+    font-weight:bold;
+}
+.quantity-control span{
+    min-width:28px;
+    text-align:center;
+    display:inline-block;
+    font-weight:bold;
+}
+
+/* ===== Add to Cart Button ===== */
+.add-cart{
+    width:36px;height:36px;
+    border-radius:6px;
+    background:#fb9d9e !important;
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.2em;
+    border:none;
+    cursor:pointer;
+    transition:0.3s;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+.add-cart.active{
+    background:#4CAF50 !important;
+    color:white;
+    box-shadow:0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* ===== Cart Bar (Modified) ===== */
+#cartBar{
+    position:fixed;
+    left:0; bottom:0;
+    width:100%;
+    background:#888; /* 灰色 */
+    color:black;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0.5em 0.8em; /* 高度降低 */
+    box-shadow:0 -2px 5px rgba(0,0,0,0.2);
+    font-weight:bold;
+    font-size:0.95em;
+    border-top-left-radius:12px;
+    border-top-right-radius:12px;
+    display:none;
+}
+
+/* 左側：訂單小計 */
+#cartBar-left{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    margin-left:0.5em;
+}
+#cartBar-left .subtotal-text{
+    color:black;
+}
+#cartBar-left .subtotal-amount{
+    color:red;
+    font-size:1.05em;
+    font-weight:bold;
+}
+
+/* 右側：結帳按鈕 */
+#cartBar-right button{
+    background:#fb9d9e;
+    border:none;
+    padding:0.5em 1.6em;
+    border-radius:30px; /* 雙邊圓角細長 */
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+    transition:0.3s;
+}
+#cartBar-right button:hover{
+    background:#ff4d4d;
+}
+
+/* ===== Modal ===== */
+.modal{
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background:rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:flex-start;
+    padding-top:5%;
+    z-index:9999;
+}
+.modal-content{
+    background:white;
+    padding:1.5em;
+    border-radius:12px;
+    max-height:90%;
+    overflow-y:auto;
+    width:95%;
+    position:relative;
+    font-size:0.9em;
+}
+.modal-close{
+    position:absolute;
+    top:10px; right:12px;
+    cursor:pointer;
+    color:red;
+    font-weight:bold;
+    font-size:1.2em;
+}
+#cartItems div{
+    padding:0.3em 0;
+    border-bottom:1px solid #eee;
+}
 #cartItems div:last-child{border:none;}
-select,input{width:100%;padding:0.5em;margin:0.2em 0;border-radius:6px;border:1px solid #ccc;font-size:0.9em;}
-button#checkoutBtn{width:100%;padding:0.6em;margin-top:0.6em;border:none;border-radius:8px;background:#7ed6df;color:white;font-weight:bold;cursor:pointer;font-size:1em;}
-button#checkoutBtn:hover{background:#63c5b5;}
-#selfPickup, #deliveryForm{margin-top:0.5em;}
+
+select,input{
+    width:100%;
+    padding:0.5em;
+    margin:0.2em 0;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:0.9em;
+}
+
+button#checkoutBtn{
+    width:100%;
+    padding:0.6em;
+    margin-top:0.6em;
+    border:none;
+    border-radius:8px;
+    background:#7ed6df;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:1em;
+}
+button#checkoutBtn:hover{
+    background:#63c5b5;
+}
+
+/* ===== Responsive ===== */
 @media (max-width:600px){
-.products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
-.product-card img{height:120px;}
-.category-btn{padding:0.5em 0.8em;font-size:0.85em;}
-header h1{font-size:1.4em;}
-header p{font-size:0.85em;}
+    .products{
+        grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+        gap:0.6em;
+    }
+    .product-card img{height:120px;}
+    .category-btn{
+        padding:0.5em 0.8em;
+        font-size:0.85em;
+    }
+    header h1{font-size:1.4em;}
+    header p{font-size:0.85em;}
 }
 </style>
+
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
+
 <body>
 <header>
-<h1>生鮮蔬果購物商城</h1>
-<p id="greeting">您好, 會員</p>
+    <h1>生鮮蔬果購物商城</h1>
+    <p id="greeting">您好, 會員</p>
 </header>
 
-<div class="container">
-<div class="categories" id="categoryContainer"></div>
-<div class="products" id="productContainer"></div>
+<!-- ===== 購物車欄 ===== -->
+<div id="cartBar">
+    <div id="cartBar-left">
+        <span class="subtotal-text">訂單小計</span>
+        <span class="subtotal-amount">$0</span>
+    </div>
+
+    <div id="cartBar-right">
+        <button id="viewCartBtn">查看 | 結帳</button>
+    </div>
 </div>
 
-<div id="cartBar">
-  <span id="cartInfo">訂單小計 0 件 | 0 元</span>
-  <button id="viewCartBtn">查看 | 結帳</button>
-</div>
 
 <div class="modal" id="cartModal">
   <div class="modal-content">
@@ -100,7 +316,7 @@ header p{font-size:0.85em;}
       <input type="text" id="receiverAddress" placeholder="地址"><br>
     </div>
 
-    <button id="checkoutBtn">✅ 結帳</button>
+    <button id="checkoutBtn"> 結帳</button>
   </div>
 </div>
 
