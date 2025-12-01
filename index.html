@@ -156,7 +156,7 @@ header p{font-size:0.85em;}
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbzYg4la_RteL6fYGGQu-Qb3Qo-tpsfPdKRcxaNeC5Ya3kP2Upna6og28uhssgW-dR3e/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxs00owQUWOZuqkhKhljEZpj0GuxArSoIJuDO4Nkt4nizeen-kIGqFqOKsaS1x8q1Fv/exec";
 let products=[], categories=[], cart=[], userId="", userName="";
 let pickupStores = [];
 
@@ -176,7 +176,7 @@ async function fetchProducts(){
   try{
     const res = await fetch(API_URL+"?action=products");
     products = await res.json();
-    console.log("抓到商品資料:", products); // ✅確認資料
+    console.log("抓到商品資料:", products);
     categories = [...new Set(products.map(p => p['類別']))].filter(Boolean);
     renderCategories();
     if(categories[0]) renderProducts(categories[0]);
@@ -296,7 +296,7 @@ function addToCartWithAnimation(idName, btn){
   if(btn.classList.contains("active")){
     if(existIndex !== -1) cart.splice(existIndex,1);
     btn.classList.remove("active");
-    btn.style.background = "#B22222";
+    btn.style.background = "#D94A42";
   } else {
     if(existIndex !== -1) cart[existIndex].quantity += qty;
     else cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['類別']});
@@ -396,23 +396,37 @@ document.getElementById("checkoutBtn").onclick = async function(){
     deliveryMethod,receiverName,receiverPhone,receiverAddress,pickupStore,items:cart
   };
 
+  // 下單
   const resOrder=await fetch(API_URL,{method:'POST',body:JSON.stringify(data)});
   const resultOrder=await resOrder.json();
   alert("訂單完成，單號："+resultOrder.orderId);
 
   cart=[]; updateCartBar(); cartModal.style.display="none";
 
-  // 結帳後重置商品數量回 1
+  // 重置商品數量回 1
   products.forEach(p=>{
     const idName = encodeURIComponent(p['商品名稱']);
     const span = document.getElementById(`qty-${idName}`);
     if(span) span.textContent = "1";
   });
+
+  // ✅ 結帳完成後通知 LINE Bot 回覆訂單
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "notifyBot",
+        userId: userId,
+        orderId: resultOrder.orderId
+      })
+    });
+  } catch(e){ console.error("通知 LINE Bot 失敗", e); }
 }
 
 // ===== 初始化 =====
 initLIFF().then(fetchProducts);
 </script>
+
 
 </body>
 </html>
