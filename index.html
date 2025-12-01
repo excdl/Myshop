@@ -25,63 +25,12 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .quantity-control{margin:0.4em 0;display:flex;align-items:center;gap:5px;justify-content:flex-start;}
 .quantity-control button{width:32px;height:32px;border:none;background:#7ed6df;color:white;border-radius:4px;cursor:pointer;font-weight:bold;}
 .quantity-control span{min-width:28px;text-align:center;display:inline-block;font-weight:bold;}
-.add-cart {
-    width:36px;
-    height:36px;
-    border-radius:6px;
-    background:#fb9d9e !important; 
-    color:white;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:1.2em;
-    border:none;
-    cursor:pointer;
-    transition:0.3s;
-    box-shadow:0 2px 6px rgba(0,0,0,0.3);
-}
-.add-cart.active {
-    background:#4CAF50 !important;
-    color:white;
-    box-shadow:0 2px 8px rgba(0,0,0,0.5);
-}
-#cartBar {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background:#4CAF50; 
-    color:white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.8em 1em;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-    font-weight: bold;
-    font-size: 0.95em;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    display: none;
-    transition: transform 0.2s ease;
-}
-#cartBar.flash {
-    transform: scale(1.1);
-}
-#cartBar span#cartInfo {
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-}
-#cartBar button#viewCartBtn {
-    background:#fb9d9e;
-    border:none;
-    padding:0.5em 1em;
-    border-radius:6px;
-    color:white;
-    cursor:pointer;
-    font-weight:bold;
-    transition:0.3s;
-}
+.add-cart {width:36px;height:36px;border-radius:6px;background:#fb9d9e !important;color:white;display:flex;align-items:center;justify-content:center;font-size:1.2em;border:none;cursor:pointer;transition:0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
+.add-cart.active {background:#4CAF50 !important;color:white;box-shadow:0 2px 8px rgba(0,0,0,0.5);}
+#cartBar {position: fixed;left: 0;bottom: 0;width: 100%;background:#4CAF50;color:white;display: flex;justify-content: space-between;align-items: center;padding: 0.8em 1em;box-shadow: 0 -2px 5px rgba(0,0,0,0.2);font-weight: bold;font-size: 0.95em;border-top-left-radius: 12px;border-top-right-radius: 12px;display: none;transition: transform 0.2s ease;}
+#cartBar.flash {transform: scale(1.1);}
+#cartBar span#cartInfo {display: flex;align-items: center;gap: 0.5em;}
+#cartBar button#viewCartBtn {background:#fb9d9e;border:none;padding:0.5em 1em;border-radius:6px;color:white;cursor:pointer;font-weight:bold;transition:0.3s;}
 #cartBar button#viewCartBtn:hover { background:#ff4d4d; }
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:flex-start;padding-top:5%;z-index:9999;}
 .modal-content{background:white;padding:1.5em;border-radius:12px;max-height:90%;overflow-y:auto;width:95%;position:relative;font-size:0.9em;}
@@ -246,7 +195,6 @@ function changeQty(idName, delta){
   qty += delta;
   if(qty<1) qty=1;
   span.textContent = qty;
-
   span.style.transition = "transform 0.2s";
   span.style.transform = "scale(1.3)";
   setTimeout(() => { span.style.transform = "scale(1)"; }, 200);
@@ -259,7 +207,7 @@ function changeQty(idName, delta){
   }
 }
 
-// ===== 加入購物車 =====
+// ===== 加入購物車動畫 =====
 function addToCartWithAnimation(idName, btn){
   const name = decodeURIComponent(idName);
   const qty = parseInt(document.getElementById(`qty-${idName}`).textContent);
@@ -295,11 +243,11 @@ function addToCartWithAnimation(idName, btn){
     });
   }
 
-  // 切換加入/移除購物車
+  // 點擊切換加入/移除購物車
   if(btn.classList.contains("active")){
     if(existIndex !== -1) cart.splice(existIndex,1);
     btn.classList.remove("active");
-    btn.style.background = "#D94A42";
+    btn.style.background = "#B22222";
   } else {
     if(existIndex !== -1) cart[existIndex].quantity += qty;
     else cart.push({name, price: parseInt(product['售價']), quantity: qty, category: product['類別']});
@@ -323,7 +271,7 @@ function updateCartBar(){
   cartBar.style.display="flex";
 }
 
-// ===== 購物車彈窗 =====
+// ===== 打開/關閉購物車 =====
 const cartModal = document.getElementById("cartModal");
 document.getElementById("viewCartBtn").onclick = () => { renderCart(); cartModal.style.display="flex"; }
 document.getElementById("cartClose").onclick = () => { cartModal.style.display="none"; }
@@ -371,19 +319,34 @@ document.getElementById("deliveryMethod").onchange = function(){
   }
 }
 
-// ===== 結帳 + 防重複點擊 20 秒 =====
+// ===== 結帳按鈕防重複 & 送出明細 =====
 const checkoutBtn = document.getElementById("checkoutBtn");
 checkoutBtn.addEventListener("click", async ()=>{
   if(checkoutBtn.disabled) return;
 
-  if(cart.length===0){ alert("購物車是空的！"); return; }
+  if(cart.length===0){ 
+    alert("購物車是空的！"); 
+    return; 
+  }
 
-  // 取貨方式驗證
   const deliveryMethod = document.getElementById("deliveryMethod").value;
   if(!deliveryMethod){ alert("請選擇取貨方式"); return; }
 
-  // 禁用按鈕
-  checkoutBtn.disabled = true;
+  const orderData = {
+    userId: userId,
+    userName: userName,
+    cart: cart.map(item=>({name:item.name,category:item.category,price:item.price,quantity:item.quantity})),
+    paymentMethod: document.getElementById("paymentMethod").value,
+    deliveryMethod: deliveryMethod,
+    pickupStore: deliveryMethod==="自取"?document.getElementById("pickupStore").value:"",
+    receiverName: deliveryMethod==="外送"?document.getElementById("receiverName").value:"",
+    receiverPhone: deliveryMethod==="外送"?document.getElementById("receiverPhone").value:"",
+    receiverAddress: deliveryMethod==="外送"?document.getElementById("receiverAddress").value:"",
+    totalAmount: cart.reduce((sum,i)=>sum+i.price*i.quantity,0),
+    timestamp: new Date().toISOString()
+  };
+
+  checkoutBtn.disabled=true;
   let countdown=20;
   const originalText = checkoutBtn.textContent;
   checkoutBtn.textContent = `請稍候 (${countdown})`;
@@ -398,30 +361,33 @@ checkoutBtn.addEventListener("click", async ()=>{
   },1000);
 
   try{
-    // 模擬 API
-    await fakeCheckoutAPI();
-    alert("結帳成功！");
-    cart=[];
-    renderCart();
-    updateCartBar();
-    cartModal.style.display="none";
+    const res = await fetch(API_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({action:"checkout", order:orderData})
+    });
+    const result = await res.json();
+    if(result.success){
+      alert("結帳成功！");
+      cart=[];
+      renderCart();
+      updateCartBar();
+      cartModal.style.display="none";
+    } else throw new Error(result.message || "結帳失敗");
   }catch(e){
-    alert("結帳失敗，請稍後再試。");
+    alert("結帳失敗："+e.message);
     clearInterval(timer);
     checkoutBtn.disabled=false;
     checkoutBtn.textContent = originalText;
   }
 });
 
-// 模擬結帳 API
-function fakeCheckoutAPI(){ return new Promise(resolve=>setTimeout(resolve,1000)); }
-
-// ===== 初始化 =====
 initLIFF();
 fetchProducts();
 </script>
 </body>
 </html>
+
 
 
 
