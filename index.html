@@ -22,68 +22,96 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .product-card h3{margin:0.4em 0 0.2em 0;font-size:1em;}
 .product-card p{margin:0.2em 0;font-size:0.85em;color:#555;}
 .product-card .price{font-weight:bold;color:#ff6b6b;margin-top:0.4em;}
-/* --- 全新的 + / - 加大、深色、圓角 --- */
-.quantity-control button {
-    width: 38px;
-    height: 38px;
-    border: none;
-    background: #333; /* 深色更明顯 */
-    color: white;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1.25em;
+/* --- 整排數量控制（中央對齊、間距美觀） --- */
+.quantity-control {
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    gap: 12px;  /* 與按鈕、小方框的間距一致更美觀 */
+    margin: 0.6em 0;
 }
 
-/* --- 數字方框：變大、更清楚、有框線 --- */
+
+/* --- +、– 按鈕：APP 樣式、完美置中 --- */
+.quantity-control button {
+    width: 32px;
+    height: 32px;
+    background: #7ed6df;
+    color: #1b1b1b;      /* 符號深色，更清楚 */
+    font-size: 1.45em;   /* 符號放大但不貼邊 */
+    font-weight: bold;
+
+    display: flex;       /* 完美置中 */
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 8px;  /* 更像 APP */
+    cursor: pointer;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    transition: 0.15s;
+}
+
+.quantity-control button:active {
+    transform: scale(0.9);
+}
+
+
+/* --- 數字小方框：保持原本大小，但提升質感、陰影、圓角 --- */
 .quantity-control span {
-    min-width: 38px;
-    height: 38px;
+    min-width: 30px;     /* 保留原大小，可微調 */
+    height: 30px;
+
+    background: #fff;
+    border: 2px solid #555;
+    border-radius: 8px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
-    font-size: 1.2em;
+
+    font-size: 1.15em;
     font-weight: bold;
     color: #333;
-    border: 2px solid #555; /* 更明顯框線 */
-    border-radius: 8px; /* 與按鈕統一 */
+
     box-shadow: 0 2px 4px rgba(0,0,0,0.15);
 }
 
-/* --- 加入購物車按鈕：更大、顏色更亮、icon加粗 --- */
+
+/* --- 加入購物車按鈕：統一風格、APP 樣式更亮更立體 --- */
 .add-cart {
     width: 44px;
     height: 44px;
-    border-radius: 10px;
+
     background: #ff6b6b !important;
-    color: white;
+    border-radius: 10px;
+
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.45em;
+
+    font-size: 1.55em;    /* icon 放大 */
+    color: #fff;
     border: none;
     cursor: pointer;
-    transition: 0.2s;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+
+    box-shadow: 0 3px 10px rgba(0,0,0,0.22);
+    transition: 0.15s;
 }
 
-/* 加入後變綠色、亮度增加 */
+.add-cart:hover {
+    transform: scale(1.08);
+}
+
+.add-cart:active {
+    transform: scale(0.92);
+}
+
+/* 加入購物車後變綠色，同樣 APP 樣式 */
 .add-cart.active {
     background: #4CAF50 !important;
-    font-size: 1.45em;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.28);
 }
-
-/* hover 更明顯（桌機用） */
-.add-cart:hover {
-    transform: scale(1.07);
-}
-
 
 #cartBar {
   position: fixed;
