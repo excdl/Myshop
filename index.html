@@ -50,7 +50,7 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 select,input{width:100%;padding:0.5em;margin:0.2em 0;border-radius:6px;border:1px solid #ccc;font-size:0.9em;}
 button#checkoutBtn{width:100%;padding:0.6em;font-size:1em;font-weight:bold;border-radius:8px;border:none;background:#7ed6df;color:white;cursor:pointer;}
 button#checkoutBtn:hover{background:#63c5b5;}
-#loadingSpinner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2em;font-weight:bold;color:#333;z-index:10000;}
+#loadingSpinner{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2em;font-weight:bold;color:#333;}
 
 @media (max-width:600px){
 .products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
@@ -60,7 +60,7 @@ header h1{font-size:1.4em;}
 header p{font-size:0.85em;}
 }
 </style>
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js" defer></script>
 </head>
 <body>
 <header>
@@ -71,7 +71,7 @@ header p{font-size:0.85em;}
 <div class="container">
 <div class="categories" id="categoryContainer"></div>
 <div class="products" id="productContainer">
-  <!-- Skeleton 初始骨架 -->
+  <!-- 初始骨架 -->
   <div class="product-card skeleton"></div>
   <div class="product-card skeleton"></div>
   <div class="product-card skeleton"></div>
@@ -127,6 +127,7 @@ header p{font-size:0.85em;}
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz_VaPxbndfTGn7AD7172q0WnqvqRW4c_corHHSQl4PS8L2xAQbt9vjr7hnGnhijkY/exec";
 let products=[], categories=[], cart=[], userId="", userName="", pickupStores=[];
+let lazyObserver=null;
 
 /* ---------------- LIFF 初始化 ---------------- */
 async function initLIFF(){
@@ -184,49 +185,59 @@ function renderCategories(){
   if(container.firstChild) container.firstChild.classList.add("active");
 }
 
-/* ---------------- 渲染產品 ---------------- */
+/* ---------------- 分批渲染產品 ---------------- */
 function renderProducts(category){
   const container = document.getElementById("productContainer");
   container.innerHTML="";
-  products.filter(p => p['類別']?.trim() === category?.trim())
-    .forEach(p=>{
+  const filtered = products.filter(p => p['類別']?.trim() === category?.trim());
+  
+  let i = 0;
+  function batchRender(){
+    const batch = filtered.slice(i, i+4); 
+    batch.forEach(p=>{
       const idName = encodeURIComponent(p['商品名稱']);
       const card = document.createElement("div");
-      card.className="product-card";
-      card.innerHTML=`
-        <img data-src="${p['商品照片']}" alt="${p['商品名稱']}" class="lazy">
-        <h3>${p['商品名稱']}</h3>
-        <p>${p['特色說明'] || ''}</p>
-        <p>單位：${p['單位']}</p>
-        <p class="price">${p['售價']} 元</p>
-        <p class="quantity-control">
-          <button onclick="changeQty('${idName}',-1)">-</button>
-          <span id="qty-${idName}">1</span>
-          <button onclick="changeQty('${idName}',1)">+</button>
-          <button class="add-cart" style="background:#B22222;color:white;" 
-            onclick="addToCartWithAnimation('${idName}', this)">🛒
-          </button>
-        </p>
-      `;
+      card.className="product-card skeleton"; 
+      card.innerHTML=`<h3>${p['商品名稱']}</h3>`;
       container.appendChild(card);
+      setTimeout(()=>{
+        card.innerHTML=`
+          <img data-src="${p['商品照片']}" alt="${p['商品名稱']}" class="lazy">
+          <h3>${p['商品名稱']}</h3>
+          <p>${p['特色說明'] || ''}</p>
+          <p>單位：${p['單位']}</p>
+          <p class="price">${p['售價']} 元</p>
+          <p class="quantity-control">
+            <button onclick="changeQty('${idName}',-1)">-</button>
+            <span id="qty-${idName}">1</span>
+            <button onclick="changeQty('${idName}',1)">+</button>
+            <button class="add-cart" style="background:#B22222;color:white;" 
+              onclick="addToCartWithAnimation('${idName}', this)">🛒
+            </button>
+          </p>`;
+      }, 50);
     });
-  initLazyLoad();
+    i+=4;
+    if(i<filtered.length) requestAnimationFrame(batchRender);
+    else initLazyLoad();
+  }
+  batchRender();
 }
 
-/* ---------------- 圖片懶載入 ---------------- */
+/* ---------------- 懶載入 ---------------- */
 function initLazyLoad(){
-  const lazyImages = document.querySelectorAll("img.lazy");
-  const observer = new IntersectionObserver(entries=>{
+  if(lazyObserver) return;
+  lazyObserver = new IntersectionObserver(entries=>{
     entries.forEach(entry=>{
       if(entry.isIntersecting){
         const img = entry.target;
         img.src = img.dataset.src;
         img.classList.remove("lazy");
-        observer.unobserve(img);
+        lazyObserver.unobserve(img);
       }
     });
-  }, {rootMargin:"100px"}); // 提前載入
-  lazyImages.forEach(img=>observer.observe(img));
+  });
+  document.querySelectorAll("img.lazy").forEach(img=>lazyObserver.observe(img));
 }
 
 /* ---------------- 數量 & 購物車 ---------------- */
@@ -283,61 +294,54 @@ function renderCart(){
   updateCartBar();
 }
 
-/* ---------------- 取貨方式切換 ---------------- */
+/* ---------------- 預設行為 ---------------- */
 document.getElementById("deliveryMethod").onchange = function(){
   const val = this.value;
-  const selfPickup = document.getElementById("selfPickup");
-  const deliveryForm = document.getElementById("deliveryForm");
-  if(val==="自取"){ selfPickup.style.display="block"; deliveryForm.style.display="none"; }
-  else if(val==="外送"){ selfPickup.style.display="none"; deliveryForm.style.display="block"; fetchUserData(); }
-  else{ selfPickup.style.display="none"; deliveryForm.style.display="none"; }
+  if(val==="自取"){ document.getElementById("selfPickup").style.display="block"; document.getElementById("deliveryForm").style.display="none"; }
+  else if(val==="外送"){ document.getElementById("selfPickup").style.display="none"; document.getElementById("deliveryForm").style.display="block"; fetchUserData(); }
+  else{ document.getElementById("selfPickup").style.display="none"; document.getElementById("deliveryForm").style.display="none"; }
 }
 
 async function fetchUserData(){
   if(!userId) return;
-  try{
-    const res = await fetch(API_URL+"?action=getUser&userId="+userId);
-    const result = await res.json();
-    if(result.user){
-      document.getElementById("receiverName").value = result.user.name||"";
-      document.getElementById("receiverPhone").value = result.user.phone||"";
-      document.getElementById("receiverAddress").value = result.user.address||"";
-    }
-  } catch(e){ console.error(e); }
+  const res = await fetch(API_URL+"?action=getUser&userId="+userId);
+  const result = await res.json();
+  if(result.user){
+    document.getElementById("receiverName").value = result.user.name||"";
+    document.getElementById("receiverPhone").value = result.user.phone||"";
+    document.getElementById("receiverAddress").value = result.user.address||"";
+  }
 }
 
-/* ---------------- 結帳送出 ---------------- */
+/* ---------------- 結帳 ---------------- */
 document.getElementById("checkoutBtn").onclick = async function(){
   if(cart.length===0){ alert("購物車是空的"); return; }
-  const paymentMethod = document.getElementById("paymentMethod").value;
-  const deliveryMethod = document.getElementById("deliveryMethod").value;
-  if(!deliveryMethod){ alert("請選擇取貨方式"); return; }
-  let orderData = { userId, userName, cart, paymentMethod, deliveryMethod, total: cart.reduce((sum,i)=>sum+i.price*i.quantity,0) };
-  if(deliveryMethod==="自取") orderData.pickupStore = document.getElementById("pickupStore").value;
-  else if(deliveryMethod==="外送"){
-    orderData.receiverName=document.getElementById("receiverName").value;
-    orderData.receiverPhone=document.getElementById("receiverPhone").value;
-    orderData.receiverAddress=document.getElementById("receiverAddress").value;
-    if(!orderData.receiverName||!orderData.receiverPhone||!orderData.receiverAddress){
-      alert("請完整填寫收件資訊"); return;
-    }
-  }
-  try{
-    const res=await fetch(API_URL+"?action=checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(orderData)});
-    const result=await res.json();
-    if(result.success){
-      alert("訂單送出成功！");
-      cart=[]; updateCartBar(); cartModal.style.display="none";
-      document.querySelectorAll(".add-cart.active").forEach(btn=>{ btn.classList.remove("active"); btn.style.background="#B22222"; });
-    } else alert("訂單送出失敗，請稍後再試");
-  } catch(e){ console.error("結帳失敗:", e); alert("結帳過程發生錯誤"); }
+  const method=document.getElementById("paymentMethod").value;
+  const delivery=document.getElementById("deliveryMethod").value;
+  let info={userId,userName,cart,payment:method,delivery};
+  if(delivery==="自取") info.store=document.getElementById("pickupStore").value;
+  else info.receiver={
+    name: document.getElementById("receiverName").value,
+    phone: document.getElementById("receiverPhone").value,
+    address: document.getElementById("receiverAddress").value
+  };
+  const res = await fetch(API_URL+"?action=checkout",{
+    method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(info)
+  });
+  const result = await res.json();
+  if(result.success){ alert("訂單成功"); cart=[]; renderCart(); cartModal.style.display="none"; }
+  else alert("訂單失敗");
 }
 
-/* ---------------- 初始化 ---------------- */
-window.onload = async function(){ await initLIFF(); await fetchProducts(); }
+/* ---------------- 初始載入 ---------------- */
+window.addEventListener("load", ()=>{
+  initLIFF();
+  fetchProducts();
+});
 </script>
 </body>
 </html>
+
 
 
 
