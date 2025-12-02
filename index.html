@@ -22,17 +22,83 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .product-card h3{margin:0.4em 0 0.2em 0;font-size:1em;}
 .product-card p{margin:0.2em 0;font-size:0.85em;color:#555;}
 .product-card .price{font-weight:bold;color:#ff6b6b;margin-top:0.4em;}
-.quantity-control{margin:0.4em 0;display:flex;align-items:center;gap:5px;justify-content:flex-start;}
-.quantity-control button{width:32px;height:32px;border:none;background:#7ed6df;color:white;border-radius:4px;cursor:pointer;font-weight:bold;}
-.quantity-control span{min-width:28px;text-align:center;display:inline-block;font-weight:bold;}
-.add-cart {width:36px;height:36px;border-radius:6px;background:#fb9d9e !important;color:white;display:flex;align-items:center;justify-content:center;font-size:1.2em;border:none;cursor:pointer;transition:0.3s;box-shadow:0 2px 6px rgba(0,0,0,0.3);}
-.add-cart.active {background:#4CAF50 !important;color:white;box-shadow:0 2px 8px rgba(0,0,0,0.5);}
+/* --- 全新的 + / - 加大、深色、圓角 --- */
+.quantity-control button {
+    width: 38px;
+    height: 38px;
+    border: none;
+    background: #333; /* 深色更明顯 */
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.25em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+}
+
+/* --- 數字方框：變大、更清楚、有框線 --- */
+.quantity-control span {
+    min-width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+    border: 2px solid #555; /* 更明顯框線 */
+    border-radius: 8px; /* 與按鈕統一 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+/* --- 加入購物車按鈕：更大、顏色更亮、icon加粗 --- */
+.add-cart {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #ff6b6b !important;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45em;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+
+/* 加入後變綠色、亮度增加 */
+.add-cart.active {
+    background: #4CAF50 !important;
+    font-size: 1.45em;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* hover 更明顯（桌機用） */
+.add-cart:hover {
+    transform: scale(1.07);
+}
+
 
 #cartBar {
-  position: fixed; left:0; bottom:0; width:100%;
-  height:60px; background:#ccc; box-shadow:0 -2px 8px rgba(0,0,0,0.3);
-  display:flex; font-weight:bold; font-size:0.95em; transition: transform 0.2s ease;
-  z-index:999;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 60px;
+  background: #ccc;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center; /* 垂直置中所有內容 */
+  font-weight: bold;
+  font-size: 0.95em;
+  z-index: 999;
+  padding: 0 10px;
 }
 #cartBar div { display:flex; align-items:center; height:100%; }
 #viewCartBtn {
