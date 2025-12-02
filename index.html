@@ -30,11 +30,10 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
     margin: 0.6em 0;
 }
 
-
 /* --- +、– 按鈕：APP 樣式、完美置中 --- */
 .quantity-control button {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     background: #7ed6df;
     color: #1b1b1b;      /* 符號深色，更清楚 */
     font-size: 1.45em;   /* 符號放大但不貼邊 */
@@ -80,8 +79,8 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 
 /* --- 加入購物車按鈕：統一風格、APP 樣式更亮更立體 --- */
 .add-cart {
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
 
     background: #ff6b6b !important;
     border-radius: 10px;
@@ -141,21 +140,30 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 #cartItems div{padding:0.3em 0;border-bottom:1px solid #eee;}
 #cartItems div:last-child{border:none;}
 select,input{width:100%;padding:0.5em;margin:0.2em 0;border-radius:6px;border:1px solid #ccc;font-size:0.9em;}
-/* --- 結帳按鈕加大 10% --- */
+/* --- 1. 購物車 modal 裡的結帳按鈕恢復原尺寸 --- */
 button#checkoutBtn {
-    width: 100%;
-    padding: 0.7em;  /* 原 0.6em → +10% */
-    margin-top: 0.7em;
+    width: 100%;           /* 保持原本寬度 */
+    padding: 0.6em;        /* 原本內距 */
+    font-size: 1em;        /* 回原本尺寸 */
+    font-weight: bold;
+    border-radius: 8px;
     border: none;
-    border-radius: 10px; /* 稍微圓潤 */
     background: #7ed6df;
     color: white;
-    font-weight: bold;
     cursor: pointer;
-    font-size: 1.1em; /* 按鈕字體加大 */
 }
+
 button#checkoutBtn:hover {
-    background: #63c5b5;
+    background: #63c5b5;   /* hover 顏色不變 */
+}
+
+/* --- 2. 底下固定欄位的「確認結帳」按鈕加大 20% --- */
+#viewCartBtn {
+    transform: scale(1.2);     /* 放大 20% */
+    transform-origin: center;
+    padding: 0.48em 1.44em;    /* 原 padding*1.2 */
+    font-size: 1.14em;          /* 原字體*1.2 */
+    font-weight: bold;
 }
 
 @media (max-width:600px){
@@ -183,7 +191,7 @@ header p{font-size:0.85em;}
   <div style="flex:1; justify-content:center;">
     <span id="cartInfo"><strong style="color:black;">訂單小計</strong> <span style="color:red;">0 元</span></span>
   </div>
-  <div style="flex:1; justify-content:flex-start;">
+  <div style="flex:1; justify-content:center;">
     <button id="viewCartBtn">確認結帳</button>
   </div>
 </div>
