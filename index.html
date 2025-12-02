@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>生鮮蔬果購物商城</title>
 <style>
+/* ---------- 基本樣式 ---------- */
 body{font-family:"Microsoft JhengHei",Arial,sans-serif;margin:0;padding:0;background:#f5f5f5;}
 header{background:#7ed6df;color:white;padding:1.2em;text-align:center;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
 header h1{margin:0;font-size:1.6em;}
@@ -15,33 +16,33 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 .category-btn:hover{background:#7ed6df;color:white;}
 .category-btn.active{background:#7ed6df;color:white;box-shadow:0 2px 5px rgba(0,0,0,0.2);}
 .products{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.8em;}
-.product-card{background:white;border-radius:8px;padding:0.8em;box-shadow:0 2px 10px rgba(0,0,0,0.1);display:flex;flex-direction:column;transition:0.3s;position:relative;overflow:hidden;font-size:0.9em;border:2px solid #ccc; min-height:280px;}
+.product-card{background:white;border-radius:8px;padding:0.8em;box-shadow:0 2px 10px rgba(0,0,0,0.1);display:flex;flex-direction:column;transition:0.3s;position:relative;overflow:hidden;font-size:0.9em;border:2px solid #ccc;}
+.product-card:hover{transform:translateY(-2px);box-shadow:0 3px 12px rgba(0,0,0,0.2);}
 .product-card img{width:100%;height:140px;object-fit:cover;border-radius:6px;transition:0.3s;}
 .product-card:hover img{transform:scale(1.03);}
 .product-card h3{margin:0.4em 0 0.2em 0;font-size:1em;}
 .product-card p{margin:0.2em 0;font-size:0.85em;color:#555;}
 .product-card .price{font-weight:bold;color:#ff6b6b;margin-top:0.4em;}
-.quantity-control {display: flex; align-items: center; gap: 10px; margin: 0.6em 0;}
-.quantity-control button {width: 30px; height: 30px; background: #7ed6df; color: #1b1b1b; font-size: 1.45em; font-weight: bold; display: flex; align-items: center; justify-content: center; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.18); transition: 0.15s;}
+.quantity-control {display: flex;align-items: center;gap: 10px;margin: 0.6em 0;}
+.quantity-control button {width: 30px;height: 30px;background: #7ed6df;color: #1b1b1b;font-size: 1.45em;font-weight: bold;display: flex;align-items: center;justify-content: center;border: none;border-radius: 8px;cursor: pointer;box-shadow: 0 2px 6px rgba(0,0,0,0.18);transition: 0.15s;}
 .quantity-control button:active {transform: scale(0.9);}
-.quantity-control span {min-width: 40px; height: 26px; background: #fff; border: 1px solid #bbb; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.95em; font-weight: 400; color: #333; box-shadow: 0 2px 4px rgba(0,0,0,0.10);}
-.add-cart {width: 46px; height: 46px; background: #ff6b6b !important; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.55em; color: #fff; border: none; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.22); transition: 0.15s;}
+.quantity-control span {min-width: 40px;height: 26px;background: #fff;border: 1px solid #bbb;border-radius: 8px;display: flex;align-items: center;justify-content: center;font-size: 0.95em;font-weight: 400;color: #333;box-shadow: 0 2px 4px rgba(0,0,0,0.10);}
+.add-cart {width: 46px;height: 46px;background: #ff6b6b !important;border-radius: 10px;display: flex;align-items: center;justify-content: center;font-size: 1.55em;color: #fff;border: none;cursor: pointer;box-shadow: 0 3px 10px rgba(0,0,0,0.22);transition: 0.15s;}
 .add-cart:hover {transform: scale(1.08);}
 .add-cart:active {transform: scale(0.92);}
-.add-cart.active {background: #4CAF50 !important; box-shadow: 0 3px 12px rgba(0,0,0,0.28);}
-#cartBar{position: fixed; left: 0; bottom: 0; width: 100%; height: 60px; background: #ccc; box-shadow: 0 -2px 8px rgba(0,0,0,0.3); display: flex; align-items: center; font-weight: bold; font-size: 0.95em; z-index: 999; padding: 0 10px;}
-#cartBar div{display:flex; align-items:center; height:100%;}
-#viewCartBtn{border:none; border-radius:20px; padding:0.48em 1.44em; cursor:pointer; font-weight:bold; background:#fb9d9e; color:white; transition:0.3s; font-size:1.14em;}
-#viewCartBtn:hover{background:#ff4d4d;}
+.add-cart.active {background: #4CAF50 !important;box-shadow: 0 3px 12px rgba(0,0,0,0.28);}
+#cartBar {position: fixed;left: 0;bottom: 0;width: 100%;height: 60px;background: #ccc;box-shadow: 0 -2px 8px rgba(0,0,0,0.3);display: flex;align-items: center;font-weight: bold;font-size: 0.95em;z-index: 999;padding: 0 10px;}
+#cartBar div { display:flex; align-items:center; height:100%; }
+#viewCartBtn {border:none; border-radius:20px; padding:0.48em 1.44em; cursor:pointer;font-weight:bold; background:#fb9d9e; color:white; transition:0.3s; transform: scale(1.2);}
+#viewCartBtn:hover { background:#ff4d4d; }
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);justify-content:center;align-items:flex-start;padding-top:5%;z-index:9999;}
 .modal-content{background:white;padding:1.5em;border-radius:12px;max-height:90%;overflow-y:auto;width:95%;position:relative;font-size:0.9em;}
 .modal-close{position:absolute;top:10px;right:12px;cursor:pointer;color:red;font-weight:bold;font-size:1.2em;}
 #cartItems div{padding:0.3em 0;border-bottom:1px solid #eee;}
 #cartItems div:last-child{border:none;}
 select,input{width:100%;padding:0.5em;margin:0.2em 0;border-radius:6px;border:1px solid #ccc;font-size:0.9em;}
-button#checkoutBtn{width: 100%; padding:0.6em; font-size:1em; font-weight:bold; border-radius:8px; border:none; background:#7ed6df; color:white; cursor:pointer;}
-button#checkoutBtn:hover{background:#63c5b5;}
-#loadingOverlay {position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.9); display:flex; justify-content:center; align-items:center; font-size:1.5em; z-index:9999;}
+button#checkoutBtn {width: 100%;padding:0.6em;font-size:1em;font-weight:bold;border-radius:8px;border:none;background:#7ed6df;color:white;cursor:pointer;}
+button#checkoutBtn:hover { background: #63c5b5;}
 @media (max-width:600px){
 .products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
 .product-card img{height:120px;}
@@ -49,11 +50,22 @@ button#checkoutBtn:hover{background:#63c5b5;}
 header h1{font-size:1.4em;}
 header p{font-size:0.85em;}
 }
+
+/* ---------- 載入中動畫 ---------- */
+#loadingOverlay {
+  position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.9); display:flex; justify-content:center; align-items:center; z-index:10000; font-size:1.2em; color:#333;
+}
+#loadingOverlay span {
+  display:inline-block;
+  animation: blink 1.2s linear infinite;
+}
+@keyframes blink {0%,100%{opacity:1;}50%{opacity:0.3;}}
 </style>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
-<div id="loadingOverlay">載入中...</div>
+
+<div id="loadingOverlay"><span>載入中...</span></div>
 
 <header>
 <h1>生鮮蔬果購物商城</h1>
@@ -61,8 +73,8 @@ header p{font-size:0.85em;}
 </header>
 
 <div class="container">
-  <div class="categories" id="categoryContainer"></div>
-  <div class="products" id="productContainer"></div>
+<div class="categories" id="categoryContainer"></div>
+<div class="products" id="productContainer"></div>
 </div>
 
 <div id="cartBar">
@@ -80,37 +92,43 @@ header p{font-size:0.85em;}
     <h3>購物車</h3>
     <div id="cartItems"></div>
     <p>總額：<span id="cartTotal">0</span> 元</p>
+
     <h4>付款方式</h4>
     <select id="paymentMethod">
       <option value="現金">現金</option>
       <option value="信用卡">信用卡</option>
       <option value="Line Pay">Line Pay</option>
     </select>
+
     <h4>取貨方式</h4>
     <select id="deliveryMethod">
       <option value="" selected disabled>請選擇取貨方式</option>
       <option value="自取">自取</option>
       <option value="外送">外送</option>
     </select>
+
     <div id="selfPickup" style="display:none;">
       <p>選擇取貨門市</p>
       <select id="pickupStore"></select>
     </div>
+
     <div id="deliveryForm" style="display:none;">
       <p>請輸入收件資訊</p>
       <input type="text" id="receiverName" placeholder="姓名"><br>
       <input type="text" id="receiverPhone" placeholder="電話"><br>
       <input type="text" id="receiverAddress" placeholder="地址"><br>
     </div>
+
     <button id="checkoutBtn">結帳</button>
   </div>
 </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbz_VaPxbndfTGn7AD7172q0WnqvqRW4c_corHHSQl4PS8L2xAQbt9vjr7hnGnhijkY/exec";
-let products=[], categories=[], cart=[], userId="", userName="", pickupStores=[];
-let currentCategory="", page=0, pageSize=6;
+let products=[], categories=[], cart=[], userId="", userName="";
+let pickupStores = [];
 
+/* ---------- 初始化 LIFF ---------- */
 async function initLIFF(){
   await liff.init({ liffId:"2008573741-WGE2G7lZ" });
   if(liff.isLoggedIn()){
@@ -121,24 +139,29 @@ async function initLIFF(){
   } else liff.login();
 }
 
+/* ---------- 抓商品資料 ---------- */
 async function fetchProducts(){
-  const res = await fetch(API_URL+"?action=products");
-  products = await res.json();
-  categories = [...new Set(products.map(p => p['類別']))].filter(Boolean);
-  renderCategories();
-  if(categories[0]) renderProducts(categories[0]);
-  const storeRes = await fetch(API_URL+"?action=stores");
-  pickupStores = await storeRes.json();
-  const storeSelect = document.getElementById("pickupStore");
-  pickupStores.forEach(s=>{
-    const opt=document.createElement("option");
-    opt.value=s;
-    opt.textContent=s;
-    storeSelect.appendChild(opt);
-  });
-  document.getElementById("loadingOverlay").style.display="none";
+  try{
+    const res = await fetch(API_URL+"?action=products");
+    products = await res.json();
+    categories = [...new Set(products.map(p => p['類別']))].filter(Boolean);
+    renderCategories();
+    if(categories[0]) renderProducts(categories[0]);
+
+    const storeRes = await fetch(API_URL+"?action=stores");
+    pickupStores = await storeRes.json();
+    const storeSelect = document.getElementById("pickupStore");
+    pickupStores.forEach(s=>{ 
+      const opt=document.createElement("option"); 
+      opt.value=s; 
+      opt.textContent=s; 
+      storeSelect.appendChild(opt); 
+    });
+  }catch(e){ console.error("抓取商品或門市失敗:", e); }
+  document.getElementById("loadingOverlay").style.display="none"; // 隱藏載入中
 }
 
+/* ---------- 渲染分類 ---------- */
 function renderCategories(){
   const container = document.getElementById("categoryContainer");
   container.innerHTML="";
@@ -156,80 +179,54 @@ function renderCategories(){
   if(container.firstChild) container.firstChild.classList.add("active");
 }
 
-function renderProducts(category, reset=true){
-  if(reset){
-    document.getElementById("productContainer").innerHTML="";
-    currentCategory = category;
-    page = 0;
-  }
+/* ---------- 渲染商品 (批量插入 + 懶加載) ---------- */
+function renderProducts(category){
   const container = document.getElementById("productContainer");
-  const filtered = products.filter(p => p['類別']?.trim() === category?.trim());
-  const slice = filtered.slice(page*pageSize, (page+1)*pageSize);
+  container.innerHTML="";
+  const fragment = document.createDocumentFragment();
 
-  slice.forEach(p=>{
+  products.filter(p => p['類別']?.trim() === category?.trim())
+  .forEach(p=>{
     const idName = encodeURIComponent(p['商品名稱']);
-    const card = document.createElement("div");
+    const card=document.createElement("div");
     card.className="product-card";
     card.innerHTML=`
-        <img data-src="${p['商品照片']}" alt="${p['商品名稱']}" class="lazy">
-        <h3>${p['商品名稱']}</h3>
-        <p>${p['特色說明'] || ''}</p>
-        <p>單位：${p['單位']}</p>
-        <p class="price">${p['售價']} 元</p>
-        <p class="quantity-control">
-          <button onclick="changeQty('${idName}',-1)">-</button>
-          <span id="qty-${idName}">1</span>
-          <button onclick="changeQty('${idName}',1)">+</button>
-          <button class="add-cart" style="background:#B22222;color:white;" 
-            onclick="addToCartWithAnimation('${idName}', this)">🛒
-          </button>
-        </p>
-      `;
-    container.appendChild(card);
+      <img src="${p['商品照片']}" loading="lazy" alt="${p['商品名稱']}">
+      <h3>${p['商品名稱']}</h3>
+      <p>${p['特色說明'] || ''}</p>
+      <p>單位：${p['單位']}</p>
+      <p class="price">${p['售價']} 元</p>
+      <p class="quantity-control">
+        <button onclick="changeQty('${idName}',-1)">-</button>
+        <span id="qty-${idName}">1</span>
+        <button onclick="changeQty('${idName}',1)">+</button>
+        <button class="add-cart" style="background:#B22222;color:white;" 
+          onclick="addToCartWithAnimation('${idName}', this)">🛒
+        </button>
+      </p>
+    `;
+    fragment.appendChild(card);
   });
-  initLazyLoad();
-  page++;
+
+  container.appendChild(fragment);
 }
 
-window.addEventListener('scroll', () => {
-  const nearBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
-  if(nearBottom){
-    const filtered = products.filter(p => p['類別']?.trim() === currentCategory?.trim());
-    if(page*pageSize < filtered.length){
-      renderProducts(currentCategory, false);
-    }
-  }
-});
-
-function initLazyLoad(){
-  const lazyImages = document.querySelectorAll('img.lazy');
-  const observer = new IntersectionObserver((entries, obs)=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting){
-        const img = entry.target;
-        img.src = img.dataset.src;
-        img.classList.remove('lazy');
-        obs.unobserve(img);
-      }
-    });
-  }, {rootMargin: "100px"});
-  lazyImages.forEach(img=>observer.observe(img));
-}
-
+/* ---------- 數量控制 ---------- */
 function changeQty(idName, delta){
   const span = document.getElementById(`qty-${idName}`);
   let qty = parseInt(span.textContent);
-  qty += delta;
-  if(qty<1) qty=1;
+  qty += delta; if(qty<1) qty=1;
   span.textContent = qty;
+  span.style.transition = "transform 0.2s";
+  span.style.transform = "scale(1.3)";
+  setTimeout(() => { span.style.transform = "scale(1)"; }, 200);
+
   const name = decodeURIComponent(idName);
   const existIndex = cart.findIndex(c=>c.name===name);
-  if(existIndex !== -1){
-    cart[existIndex].quantity = qty;
-    updateCartBar();
-  }
+  if(existIndex !== -1){ cart[existIndex].quantity = qty; updateCartBar(); }
 }
 
+/* ---------- 加入購物車 ---------- */
 function addToCartWithAnimation(idName, btn){
   const name = decodeURIComponent(idName);
   const qty = parseInt(document.getElementById(`qty-${idName}`).textContent);
@@ -246,9 +243,11 @@ function addToCartWithAnimation(idName, btn){
     btn.classList.add("active");
     btn.style.background = "#27ae60";
   }
+
   updateCartBar();
 }
 
+/* ---------- 更新購物車欄位 ---------- */
 function updateCartBar(){
   const cartBar = document.getElementById("cartBar");
   if(cart.length===0){ cartBar.style.display="none"; return; }
@@ -257,6 +256,7 @@ function updateCartBar(){
   cartBar.style.display="flex";
 }
 
+/* ---------- 購物車 modal ---------- */
 const cartModal = document.getElementById("cartModal");
 document.getElementById("viewCartBtn").onclick = () => { renderCart(); cartModal.style.display="flex"; }
 document.getElementById("cartClose").onclick = () => { cartModal.style.display="none"; }
@@ -276,6 +276,19 @@ function renderCart(){
   updateCartBar();
 }
 
+/* ---------- 抓使用者資料 ---------- */
+async function fetchUserData() {
+  if(!userId) return;
+  const res = await fetch(API_URL+"?action=getUser&userId="+userId);
+  const result = await res.json();
+  if(result.user){
+    document.getElementById("receiverName").value = result.user.name || "";
+    document.getElementById("receiverPhone").value = result.user.phone || "";
+    document.getElementById("receiverAddress").value = result.user.address || "";
+  }
+}
+
+/* ---------- 取貨方式切換 ---------- */
 document.getElementById("deliveryMethod").onchange = function(){
   const val = this.value;
   if(val === "自取"){ 
@@ -284,31 +297,82 @@ document.getElementById("deliveryMethod").onchange = function(){
   } else if(val === "外送"){ 
     document.getElementById("selfPickup").style.display = "none"; 
     document.getElementById("deliveryForm").style.display = "block"; 
+    fetchUserData(); 
   } else {
     document.getElementById("selfPickup").style.display = "none";
     document.getElementById("deliveryForm").style.display = "none";
   }
 }
 
-document.getElementById("checkoutBtn").onclick = function(){
+/* ---------- 結帳 ---------- */
+document.getElementById("checkoutBtn").onclick = async function(){
   if(cart.length===0){ alert("購物車是空的"); return; }
-  const payment = document.getElementById("paymentMethod").value;
-  const delivery = document.getElementById("deliveryMethod").value;
-  if(!delivery){ alert("請選擇取貨方式"); return; }
-  alert(`付款方式: ${payment}\n取貨方式: ${delivery}\n總額: ${cart.reduce((s,i)=>s+i.quantity*i.price,0)} 元\n結帳完成!`);
-  cart=[]; updateCartBar(); cartModal.style.display="none";
-}
 
-// 初始化
-initLIFF();
-fetchProducts();
-</script>
-</body>
-</html>
+  const total我已經完整閱讀了你的 HTML + CSS + JavaScript 原始碼。這是一個「生鮮蔬果購物商城」前端範例，主要功能包括：
 
+---
 
+### 1️⃣ 主要功能概覽
+1. **使用 LINE LIFF 登入**  
+   - 透過 LIFF SDK 取得使用者名稱和 userId。
+   - 登入後顯示 `您好, 會員` → `使用者名稱 您好`。
 
+2. **商品與分類展示**
+   - 從 Google Apps Script API (`API_URL`) 取得商品資料。
+   - 自動生成分類按鈕，點擊分類後顯示該類別商品。
+   - 商品卡包含：
+     - 商品圖片、名稱、特色說明、單位、價格
+     - 數量控制（＋/－ 按鈕）
+     - 加入購物車按鈕（動畫效果，加入後變綠色）
 
+3. **購物車**
+   - 底部固定欄位顯示「訂單小計」及「確認結帳」按鈕。
+   - 點擊「確認結帳」開啟 modal 顯示購物車明細。
+   - 可選擇付款方式（現金 / 信用卡 / Line Pay）及取貨方式（自取 / 外送）。
+   - 根據取貨方式顯示：
+     - 自取 → 選擇門市
+     - 外送 → 填寫收件人資訊，金額需 ≥ 1500 元
+
+4. **結帳流程**
+   - 檢查購物車是否為空。
+   - 驗證取貨方式與收件資訊完整性。
+   - POST 資料至 Google Apps Script API 下單。
+   - 下單成功後：
+     - 顯示訂單編號
+     - 清空購物車
+     - 重置商品數量為 1
+     - 若 API 回傳 flexMsg → 透過 LIFF 傳送 Line 訊息
+
+---
+
+### 2️⃣ UI 設計重點
+- **整體風格**
+  - 使用 Microsoft JhengHei 字型，背景柔和 (#f5f5f5)
+  - header 背景色 #7ed6df，文字白色
+  - 商品卡有陰影和圓角，hover 有微動畫
+  - 數量控制按鈕和加入購物車按鈕帶有 App 風格的縮放和陰影
+
+- **響應式設計**
+  - max-width 1200px
+  - 小螢幕 (≤600px) 商品卡縮小，分類按鈕縮小，header 字體縮小
+
+- **底部購物車欄**
+  - 固定在螢幕下方，高度 60px
+  - 左側顯示小計，右側放「確認結帳」按鈕
+  - 按鈕放大 20%，hover 顏色變深
+
+- **Modal**
+  - 半透明背景 (#000 60%)
+  - 中央白色卡片，圓角 12px，最大高度 90%，可滾動
+  - 結帳按鈕全寬
+
+---
+
+### 3️⃣ JavaScript 邏輯
+- **全域變數**
+  ```js
+  let products=[], categories=[], cart=[], userId="", userName="";
+  let pickupStores = [];
 
 
 
