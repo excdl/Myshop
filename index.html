@@ -47,9 +47,22 @@ header p{margin:0.3em 0 0 0;font-size:0.95em;}
 #cartItems div{padding:0.3em 0;border-bottom:1px solid #eee;}
 #cartItems div:last-child{border:none;}
 select,input{width:100%;padding:0.5em;margin:0.2em 0;border-radius:6px;border:1px solid #ccc;font-size:0.9em;}
-button#checkoutBtn{width:100%;padding:0.6em;margin-top:0.6em;border:none;border-radius:8px;background:#7ed6df;color:white;font-weight:bold;cursor:pointer;font-size:1em;}
-button#checkoutBtn:hover{background:#63c5b5;}
-#selfPickup, #deliveryForm{margin-top:0.5em;}
+/* --- 結帳按鈕加大 10% --- */
+button#checkoutBtn {
+    width: 100%;
+    padding: 0.7em;  /* 原 0.6em → +10% */
+    margin-top: 0.7em;
+    border: none;
+    border-radius: 10px; /* 稍微圓潤 */
+    background: #7ed6df;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1.1em; /* 按鈕字體加大 */
+}
+button#checkoutBtn:hover {
+    background: #63c5b5;
+}
 
 @media (max-width:600px){
 .products{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.6em;}
